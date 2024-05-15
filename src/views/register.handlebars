@@ -1,0 +1,37 @@
+<div >
+    <h1>REGISTER</h1>
+    
+    <hr>
+
+    <form  class="box" method="post" action="/api/sessions/register">
+    
+    <label for="first_name">First Name</label>
+    <input type="text" name="first_name" id="first_name1">
+
+    <label for="last_name">Last Name</label>
+    <input type="text" name="last_name" id="last_name">
+
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email">
+
+    <label for="username">User Name</label>
+    <input type="text" name="username" id="username">
+
+    <label for="age">Age</label>
+    <input type="number" name="age" id="age">
+
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password">
+
+    <button class="btnChat" type="submit">Register</button>
+    </form>
+    
+    <span class="box"><a href="/login">Login</a></span>
+</div>
+
+
+{{#if failRegister}}
+    <script > 
+        alert('Register Failed!')
+    </script>
+{{/if}}

@@ -1,0 +1,24 @@
+
+<div class="containerChat">
+    <h2>Enviar Mensaje</h2>
+    <form id="mensajeForm">
+        <label for="user">Ingrese su Email</label><br>
+        <input class="inputChat" type="text" id="user" name="user"><br>
+    
+        <label for="message">Mensaje</label><br>
+        <textarea class="textareaChat" id="message" name="message" cols="50" rows="4"></textarea><br>
+
+        <button class="btnChat" type="submit">Enviar Mensaje</button>
+    </form>
+
+</div>
+<hr>
+
+<div id="messagesLogs">
+    {{#each chats}}
+    <div>
+        <h2>{{this.user}}</h2>
+        <p>{{this.message}}</p>
+    </div>
+     {{/each}}
+</div>

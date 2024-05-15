@@ -1,0 +1,45 @@
+<h1>Agregar Nuevo Producto</h1>
+
+<form id="formulario" class="form">
+    <label for="title">Título:</label><br>
+    <input type="text" name="title" id="title" required><br>
+
+    <label for="description">Descripción:</label><br>
+    <input type="text" name="description" id="description" required><br>
+
+    <label for="price">Precio:</label><br>
+    <input type="text" name="price" id="price" required><br>
+
+    <label for="code">Código:</label><br>
+    <input type="text" name="code" id="code" required><br>
+
+
+    <label for="stock">Stock:</label><br>
+    <input type="text" name="stock" id="stock" required><br>
+
+    <label for="category">Categoria:</label><br>
+    <input name="category" id="category" type="text">
+    <br>
+    <input type="submit" value="Agregar Producto" class="btn">
+</form>
+<hr>
+
+<h1>Listado de Productos en Tiempo Real</h1>
+
+<div class="container" id="listaProductos">
+    {{#each products}}
+    <div class="products" >
+
+        <h2 class="linea">{{this.title}}</h2>
+        
+        <p>Descripción: {{this.description}}</p>
+        <p>Precio: $ {{this.price}}</p>
+        <p>Código: {{this.code}}</p>
+        <p>category: {{this.category}}</p>
+        <img src="{{this.thumbnail}}" alt="{{this.description}}">
+        <br>
+        <button class="delete" type="submit" data-productid="{{this._id}}" >Eliminar</button>
+
+    </div>
+    {{/each}}
+</div>

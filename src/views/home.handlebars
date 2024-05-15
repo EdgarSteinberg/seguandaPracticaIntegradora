@@ -1,0 +1,43 @@
+
+<div>
+    <h1>Bienvenido {{user.first_name}} {{user.username}}</h1>
+    <hr>
+    <div class="box">
+        <p><b>Nombre: </b>{{user.first_name}}{{user.name}}</p>
+        <p><b>Usuario:</b> {{user.username}}</p>
+        <p><b>Apellido: </b>{{user.last_name}}</p>
+        <p><b>Email: </b>{{user.email}}</p>
+        <p><b>Edad: </b>{{user.age}}</p>
+    </div>
+</div>
+
+
+<div class="container">
+
+    {{#each products}}
+
+    <div class="products">
+        <h2> {{this.title}}</h2>
+        <hr>
+        <p>Precio: ${{this.price}}</p>
+        <img src="/img/{{this.thumbnail}}" alt="{{this.description}}">
+        <a href="/products/{{this._id}}" class="detail-link">
+            <button class="success" type="button">Ver Detalles</button>
+        </a>
+    </div>
+
+    {{/each}}
+
+</div>
+<div>
+    {{#if hasPrevPage}}
+    <a href="{{this.prevLink}}">
+        << Anterior</a>
+            {{/if}}
+</div>
+<br>
+<div>
+    {{#if hasNextPage}}
+    <a href="{{this.nextLink}}">Siguiente >></a>
+    {{/if}}
+</div>
