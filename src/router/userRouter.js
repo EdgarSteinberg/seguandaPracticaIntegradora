@@ -31,8 +31,8 @@ UserRouter.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
         const token = await Users.login(email, password);
-         res.cookie('auth', token, { maxAge: 60 * 60 * 1000 }).redirect('/')
-         //.send(
+        res.cookie('auth', token,{ maxAge: 60 * 60 * 1000 }).redirect('/')
+        //.send(
         //     {
         //         status: 'succes',
         //         token
@@ -80,8 +80,8 @@ UserRouter.post("/logout", (req, res) => {
 
 UserRouter.get("/github", passport.authenticate('github', { scope: ['user.email'] }), async (req, res) => {
     console.log(req.user);
- 
-    res.cookie('auth',token, { maxAge: 60 * 60 * 1000 })
+
+    res.cookie('auth', token, { maxAge: 60 * 60 * 1000 })
 });
 
 UserRouter.get("/githubcallback", passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {

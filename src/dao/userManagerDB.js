@@ -47,12 +47,12 @@ class userManagerDB {
         }
         try {
             const user = await userModel.findOne({ email }).lean();
-            console.log("User object from database:", user);
+         
             if (!user) throw new Error(errorMessage)
 
             if (isValidPassword(user, password)) {
-                 delete user.password
-                return jwt.sign(user, 'coderSecret', {expiresIn: '1h'})
+                delete user.password
+                return jwt.sign(user, 'coderSecret', { expiresIn: '1h' })
                 //return user;
             }
             throw new Error(errorMessage);

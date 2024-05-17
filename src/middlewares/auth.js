@@ -19,8 +19,8 @@ export const authenticate = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, 'coderSecret');
-        const user = await userModel.findById(decoded._id);
-        req.user = user; // Adjuntar el usuario a req.user
+        const user = await userModel.findById(decoded._id).lean();
+        req.user = user;
         console.log('Usuario autenticado:', user);
         next();
     } catch (error) {
@@ -38,22 +38,4 @@ export const publicRoute = function (req, res, next) {
 
 
 
-//Session
 
-// export const auth = function (req, res, next) {
-//     if(!req.session.user) {
-//         return res.redirect("/login")
-//     }
-
-//     return next()
-// }
-
-
-// export const publicRoute = function(req, res, next) {
-//     if(req.session.user) {
-//         // Si hay un usuario en sesión, redirigir a la página de perfil
-//         return res.redirect("/profile");
-//     }
-//     // Si no hay usuario en sesión, permitir que la solicitud continúe
-//     return next();
-// };
