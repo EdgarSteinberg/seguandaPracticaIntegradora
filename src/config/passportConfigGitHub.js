@@ -46,13 +46,27 @@ const initializeGitHubPassport = () => {
 
             }));
 
-    passport.serializeUser((user, done) => {
-        done(null, user._id);
-    });
-    passport.deserializeUser(async (id, done) => {
-        let user = await userModel.findById(id);
-        done(null, user);
-    });
+            passport.deserializeUser(async (id, done) => {
+                try {
+                    let user;
+                    if (mongoose.Types.ObjectId.isValid(id)) {
+                        // Si el id es un ObjectId válido, buscar por _id
+                        user = await userModel.findById(id);
+                    } else {
+                        // Si no es un ObjectId válido, buscar por otro campo único (por ejemplo, username o email)
+                        user = await userModel.findOne({ username: id }); // Puedes cambiar 'username' por el campo que prefieras
+                        if (!user) {
+                            user = await userModel.findOne({ email: id }); // Intentar buscar por email si no se encuentra por username
+                        }
+                    }
+                    done(null, user);
+                } catch (error) {
+                    done(error);
+                }
+            });
+            
+    
 }
 
 export default initializeGitHubPassport;
+

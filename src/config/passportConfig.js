@@ -34,6 +34,22 @@ const cookieExtractor = (req) => {
     return token;
 };
 
+passport.serializeUser((user, done) => {
+    done(null, user._id);
+});
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await userModel.findById(id);
+        console.log('User deserialized:', user); // Agrega este console log
+        done(null, user);
+    } catch (error) {
+        console.error('Error during deserialization:', error); // Agrega un console log para errores
+        done(error);
+    }
+});
+
+
 export default initializatePassport;
 
 

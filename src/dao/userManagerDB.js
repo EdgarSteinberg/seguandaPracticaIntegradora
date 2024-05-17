@@ -1,6 +1,7 @@
+import jwt from 'jsonwebtoken';
+
 import userModel from "./models/userModel.js";
 import { isValidPassword } from "../utils/cryptoUtil.js";
-import jwt from 'jsonwebtoken'
 
 class userManagerDB {
 
@@ -46,13 +47,13 @@ class userManagerDB {
         }
         try {
             const user = await userModel.findOne({ email }).lean();
-
+            console.log("User object from database:", user);
             if (!user) throw new Error(errorMessage)
 
             if (isValidPassword(user, password)) {
-                // delete user.password
-                // return jwt.sign(user, 'coderSecret', {expiresIn: '1h'})
-                return user;
+                 delete user.password
+                return jwt.sign(user, 'coderSecret', {expiresIn: '1h'})
+                //return user;
             }
             throw new Error(errorMessage);
         } catch (error) {

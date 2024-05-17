@@ -30,7 +30,7 @@ router.get("/products", authenticate, async (req, res) => {
 
         // Obtener todos los productos con los parámetros de la consulta
         const result = await Manager.getAllProducts(queryParams);
-
+        console.log(req.user);
         // Renderizar la vista con los productos y los enlaces de paginación
         res.render(
             "home",
@@ -45,8 +45,8 @@ router.get("/products", authenticate, async (req, res) => {
                 hasNextPage: result.hasNextPage,
                 prevLink: result.prevLink,
                 nextLink: result.nextLink,
-                user: req.cookies.auth
-
+                //user: req.cookies.auth
+                user: req.user
             });
     } catch (error) {
         console.error(error.message);
@@ -125,7 +125,7 @@ router.get("/carts/:cid", authenticate, async (req, res) => {
 
 
 //Ruta Login Register Logout
-router.get("/login", (req, res) => {
+router.get("/login", publicRoute, (req, res) => {
     res.render(
         'login',
         {
@@ -151,8 +151,9 @@ router.get('/profile', authenticate, (req, res) => {
         {
             title: 'Coder Perfil',
             style: 'index.css',
-            user: req.cookies.auth
+            //user: req.cookies
 
+            user: req.user
         });
 });
 
