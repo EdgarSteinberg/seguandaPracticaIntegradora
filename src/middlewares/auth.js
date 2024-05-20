@@ -21,7 +21,7 @@ export const authenticate = async (req, res, next) => {
         const decoded = jwt.verify(token, 'coderSecret');
         const user = await userModel.findById(decoded._id).lean();
         req.user = user;
-        console.log('Usuario autenticado:', user);
+        //console.log('Usuario autenticado:', user);
         next();
     } catch (error) {
         console.error('Error de autenticación:', error);

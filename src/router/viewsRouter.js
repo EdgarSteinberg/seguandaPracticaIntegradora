@@ -30,7 +30,7 @@ router.get("/products", authenticate, async (req, res) => {
 
         // Obtener todos los productos con los parámetros de la consulta
         const result = await Manager.getAllProducts(queryParams);
-        console.log(req.user);
+       
         // Renderizar la vista con los productos y los enlaces de paginación
         res.render(
             "home",
