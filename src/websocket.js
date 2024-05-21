@@ -1,9 +1,9 @@
-import { ProductManagerDB } from "./dao/productManagerDB.js";
-import { MessagesManagerDB } from "./dao/messagesManagerDB.js";
-import { CartManagerDB } from "./dao/cartManagerDB.js";
-const Manager = new ProductManagerDB();
-const Message = new MessagesManagerDB();
-const CartManager = new CartManagerDB();
+import { ProductController } from "./controllers/productController.js";
+import { MessagesController } from "./controllers/messageController.js";
+import { CartController } from "./controllers/cartController.js";
+const Manager = new ProductController();
+const Message = new MessagesController();
+const CartManager = new CartController();
 
 
 export default (io) => {
@@ -42,7 +42,7 @@ export default (io) => {
         //socket chat
         socket.on("nuevoMensaje", async data => {
             console.log(data)
-            await Message.createMessages(data);
+            await Message.create(data);
 
             io.emit("nuevoMensaje", data);
         });

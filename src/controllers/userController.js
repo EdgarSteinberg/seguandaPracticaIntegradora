@@ -1,26 +1,20 @@
 import jwt from 'jsonwebtoken';
 
-import userModel from "./models/userModel.js";
+import { UserService } from '../dao/services/userService.js';
 import { isValidPassword } from "../utils/cryptoUtil.js";
 
-class userManagerDB {
+class userController{
+    constructor() {
+        this.userService = new UserService();
+    }
 
     async getAllUsers() {
-        try {
-            return await userModel.find().lean();
-        } catch (error) {
-            console.error(error.message);
-            throw new Error('Error al consultar los usuarios')
-        }
+       return await this.userService.getAll();
+      
     }
 
     async getUser(uid) {
-        try {
-            return await userModel.findOne({ _id: uid }).lean();
-        } catch (error) {
-            console.error(error.message);
-            throw new Error('Usuario no existente')
-        }
+       return await this.userService.getById(uid)
     }
 
     async register(user) {
@@ -30,14 +24,8 @@ class userManagerDB {
             throw new Error('Error al registrar usuario');
         }
 
-        try {
-            await userModel.create({ first_name, last_name, email, age, password, username });
-
-            return 'Usuario registrado Correctamente'
-        } catch (error) {
-            console.error(error.message)
-            throw error
-        }
+        return await this.userService.createRegister({ first_name, last_name, email, age, password, username });
+    
     }
 
     async login(email, password) {
@@ -46,7 +34,7 @@ class userManagerDB {
             throw new Error(errorMessage);
         }
         try {
-            const user = await userModel.findOne({ email }).lean();
+            const user = await this.userService.createLogin(email,password)
          
             if (!user) throw new Error(errorMessage)
 
@@ -63,4 +51,4 @@ class userManagerDB {
     }
 }
 
-export { userManagerDB }
+export { userController }

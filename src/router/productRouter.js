@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { ProductManagerDB } from '../dao/productManagerDB.js';
+import { ProductController } from '../controllers/productController.js';
 import { uploader } from '../utils/multerUtil.js'
 
 const Productrouter = Router();
 
-const Manager = new ProductManagerDB();
+const Manager = new ProductController();
 
 
 

@@ -6,12 +6,12 @@ import passport from "passport";
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
-import websocket from './websocket.js'
-import rutasProduct from "./router/rutasProduct.js";
-import rutasCart from "./router/rutasCart.js";
-import rutasMessage from "./router/rutasMessage.js"
-import viewsRouter from './router/viewsRouter.js'
 import __dirname from "./utils/constantsUtil.js"
+import websocket from './websocket.js'
+import viewsRouter from './router/viewsRouter.js'
+import productRouter from "./router/productRouter.js";
+import cartRouter from "./router/cartRouter.js";
+import messageRouter from "./router/messageRouter.js"
 import userRouter from "./router/userRouter.js";
 import initializatePassport from "./config/passportConfig.js";
 import initializeGitHubPassport from "./config/passportConfigGitHub.js";
@@ -46,17 +46,17 @@ app.use(passport.initialize());
 
 
 //Routers
-app.use("/api/products", rutasProduct);
-app.use("/api/cart", rutasCart);
-app.use("/api/chat", rutasMessage);
+app.use("/api/products", productRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/chat", messageRouter);
 app.use('/api/sessions', userRouter);
 
 
 //Vistas
 app.use("/", viewsRouter);
-app.use("/chat", rutasMessage)
-app.use("/products", rutasProduct);
-app.use("/carts/:cid", rutasCart)
+app.use("/chat", messageRouter)
+app.use("/products", productRouter);
+app.use("/carts/:cid", cartRouter)
 
 //Websocket
 const PORT = 8080;

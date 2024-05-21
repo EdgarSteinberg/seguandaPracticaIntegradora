@@ -1,12 +1,12 @@
 
 import { Router } from 'express';
-import { userManagerDB } from '../dao/userManagerDB.js';
+import { userController } from '../controllers/userController.js';
 import passport from 'passport';
 
 
 const UserRouter = Router();
 
-const Users = new userManagerDB();
+const Users = new userController();
 
 
 UserRouter.post('/register', async (req, res) => {

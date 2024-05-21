@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { ProductManagerDB } from '../dao/productManagerDB.js';
-import { CartManagerDB } from '../dao/cartManagerDB.js';
-import { MessagesManagerDB } from '../dao/messagesManagerDB.js';
+import { ProductController } from '../controllers/productController.js';
+import { CartController } from '../controllers/cartController.js';
+import { MessagesController } from '../controllers/messageController.js';
 import { authenticate } from '../middlewares/auth.js'
 import { publicRoute } from '../middlewares/auth.js'
 
-const Manager = new ProductManagerDB();
-const CartManager = new CartManagerDB();
-const Messages = new MessagesManagerDB();
+const Manager = new ProductController();
+const CartManager = new CartController();
+const Messages = new MessagesController();
 
 
 const router = Router();
