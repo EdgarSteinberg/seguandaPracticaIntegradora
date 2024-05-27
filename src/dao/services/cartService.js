@@ -14,25 +14,34 @@ class CartService {
         return await cartModel.create({})
     }
 
-    async createProductInCart(cid, pid) {
+    async createProductInCart(cid, pid, update) {
+        return await cartModel.findOneAndUpdate(cid, pid, { new: true })
+    }
+
+    async deleteProduct(cid, pid) {
         return await cartModel.findOneAndUpdate(cid, pid)
     }
 
-    async deleteProduct(cid,pid) {
-        return await cartModel.findOneAndUpdate(cid,pid)
+    async updateInCart(cid, update) {
+        return await cartModel.findOneAndUpdate(cid, update, { new: true })
     }
 
-    async updateInCart(cid, products){
-        return await cartModel.findOneAndUpdate(cid, products)
-    }
-
-    async updateQuantity(cid, pid, quantity){
+    async updateQuantity(cid, pid, quantity) {//funciona
         return await cartModel.findOneAndUpdate(cid, pid, quantity)
     }
 
-    async removeProducts(cid){
-        return await cartModel.findByIdAndUpdate(cid)
+    async removeProducts(cid, update) {//funciona
+        return await cartModel.findByIdAndUpdate(cid, update, { new: true });
     }
- }
+}
 
 export { CartService }
+
+
+// async addProductToCart(cid, pid) {
+//     return await cartModel.findOneAndUpdate(
+//         { _id: cid, "products.product": pid },
+//         { $inc: { "products.$.quantity": 1 } },
+//         { new: true }
+//     );
+// }

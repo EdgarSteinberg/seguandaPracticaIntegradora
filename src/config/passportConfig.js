@@ -1,9 +1,11 @@
 import passport from 'passport';
 import jwt, { ExtractJwt } from 'passport-jwt';
+import dotenv from 'dotenv';
 
 const JWTStratergy = jwt.Strategy;
 
-
+dotenv.config();
+const secretOrKey = process.env.SECRET_KEY;
 const initializatePassport = () => {
  
     // Estrategia de autenticación JWT
@@ -12,7 +14,7 @@ const initializatePassport = () => {
         new JWTStratergy(
             {
                 jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
-                secretOrKey: 'coderSecret' 
+                secretOrKey: secretOrKey
             },
             async (jwt_payload, done) => {
                 try {
