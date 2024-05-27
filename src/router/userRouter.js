@@ -1,8 +1,6 @@
-
 import { Router } from 'express';
 import { userController } from '../controllers/userController.js';
 import passport from 'passport';
-
 
 const UserRouter = Router();
 
@@ -79,17 +77,23 @@ UserRouter.post("/logout", (req, res) => {
 });
 
 UserRouter.get("/github", passport.authenticate('github', { scope: ['user.email'] }), async (req, res) => {
-    console.log(req.user);
+    // console.log(req.user);
 
-    res.cookie('auth', req.user.token, { maxAge: 60 * 60 * 1000 }).send({
-        status: 'success',
-        message: 'success'
-    }
-    )
+    // res.cookie('auth', req.user.token, { maxAge: 60 * 60 * 1000 }).send({
+    //     status: 'success',
+    //     message: 'success'
+    // }
+    // )
 });
 
 UserRouter.get("/githubcallback", passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
-    req.user.token = req.token
-    res.redirect('/'); // Redirige al usuario a la página principal
+    //req.user.token = req.token
+    //res.redirect('/'); // Redirige al usuario a la página principal
+    
+        // req.user.token ya contiene el token JWT
+        res.cookie('auth', req.user.token, { maxAge: 60 * 60 * 1000 });
+        res.redirect('/'); // Redirige al usuario a la página principal
+
+    
 });
 export default UserRouter;

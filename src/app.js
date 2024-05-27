@@ -20,10 +20,6 @@ dotenv.config();
 
 const app = express();
 
-//MongoDB connect
-// const uri = "mongodb+srv://steinberg2024:cai2024@cluster0.cl7spkj.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0";
-// mongoose.connect(uri);
-// MongoDB connect
 mongoose.connect(process.env.MONGODB_URI)
 
 
