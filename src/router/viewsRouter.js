@@ -108,7 +108,7 @@ router.get("/chat", authenticate, async (req, res) => {
 //Rutar Cart
 router.get("/carts/:cid", authenticate, async (req, res) => {
     try {
-        const cart = await CartManager.getProductsFromCartByID(req.params.cid);
+        const cart = await CartManager.getCartById(req.params.cid);
         //console.log(cart);
         res.render(
             "carts",
