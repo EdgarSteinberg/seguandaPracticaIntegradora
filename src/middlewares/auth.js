@@ -1,12 +1,3 @@
-
-// cookies
-// export const authenticate = function (req, res, next) {
-//     if (!req.cookies.auth) {
-//         return res.redirect("/login")
-//     }
-
-//     next()
-// };
 import jwt from 'jsonwebtoken';
 
 import userModel from '../dao/models/userModel.js';

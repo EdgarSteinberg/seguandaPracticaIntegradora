@@ -1,14 +1,16 @@
 import { Router } from 'express';
+
 import { ProductController } from '../controllers/productController.js';
 import { CartController } from '../controllers/cartController.js';
 import { MessagesController } from '../controllers/messageController.js';
-import { authenticate } from '../middlewares/auth.js'
-import { publicRoute } from '../middlewares/auth.js'
+
+import { authenticate, publicRoute } from '../middlewares/auth.js'
+import { authorization } from '../middlewares/authorization.js';
+
 
 const Manager = new ProductController();
 const CartManager = new CartController();
 const Messages = new MessagesController();
-
 
 const router = Router();
 
@@ -16,6 +18,7 @@ const router = Router();
 router.get('/', authenticate, (req, res) => {
     res.redirect('/products');
 });
+
 
 router.get("/products", authenticate, async (req, res) => {
     try {
@@ -30,7 +33,7 @@ router.get("/products", authenticate, async (req, res) => {
 
         // Obtener todos los productos con los parámetros de la consulta
         const result = await Manager.getAllProducts(queryParams);
-       
+
         // Renderizar la vista con los productos y los enlaces de paginación
         res.render(
             "home",
@@ -45,7 +48,6 @@ router.get("/products", authenticate, async (req, res) => {
                 hasNextPage: result.hasNextPage,
                 prevLink: result.prevLink,
                 nextLink: result.nextLink,
-                //user: req.cookies.auth
                 user: req.user
             });
     } catch (error) {
@@ -54,7 +56,7 @@ router.get("/products", authenticate, async (req, res) => {
     }
 });
 
-router.get("/products/:pid", async (req, res) => {
+router.get("/products/:pid", authenticate , authorization('user'), async (req, res) => {
     const result = await Manager.getProductByID(req.params.pid)
 
     res.render("product",
@@ -66,7 +68,7 @@ router.get("/products/:pid", async (req, res) => {
 });
 
 //Ruta Realtimeproduct
-router.get("/realTimeProducts", authenticate, async (req, res) => {
+router.get("/realTimeProducts", authenticate, authorization("admin"), async (req, res) => {
     const queryParams = {
         page: req.query.page,
         limit: req.query.limit,
@@ -93,7 +95,7 @@ router.get("/realTimeProducts", authenticate, async (req, res) => {
 });
 
 //Ruta Chat
-router.get("/chat", authenticate, async (req, res) => {
+router.get("/chat", authenticate, authorization("user"), async (req, res) => {
     const allMessage = await Messages.getAllMessages();
 
     res.render(
@@ -157,6 +159,16 @@ router.get('/profile', authenticate, (req, res) => {
         });
 });
 
+router.get('/notFound', authenticate, (req, res) => {
+    res.render(
+        'notFound',
+        {
+            title: 'Coder Not Found',
+            style: 'index.css',
+            //user: req.cookies
 
+            user: req.user
+        });
+});
 
 export default router;

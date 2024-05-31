@@ -11,10 +11,6 @@ UserRouter.post('/register', async (req, res) => {
     try {
         const user = await Users.register(req.body);
 
-        // res.send({
-        //     status: 'success',
-        //     payload: user
-        // });
         res.redirect('/login');
 
     } catch (error) {
@@ -30,11 +26,7 @@ UserRouter.post('/login', async (req, res) => {
         const { email, password } = req.body;
         const token = await Users.login(email, password);
         res.cookie('auth', token, { maxAge: 60 * 60 * 1000 }).redirect('/')
-        //.send(
-        //     {
-        //         status: 'succes',
-        //         token
-        //     });
+      
     } catch (error) {
         res.status(400).send({
             status: 'error',
@@ -79,19 +71,19 @@ UserRouter.post("/logout", (req, res) => {
 UserRouter.get("/github", passport.authenticate('github', { scope: ['user.email'] }), async (req, res) => {
     // console.log(req.user);
 
-    // res.cookie('auth', req.user.token, { maxAge: 60 * 60 * 1000 }).send({
-    //     status: 'success',
-    //     message: 'success'
-    // }
-    // )
+    res.cookie('auth', req.user.token, { maxAge: 60 * 60 * 1000 }).send({
+        status: 'success',
+        message: 'success'
+    }
+    )
 });
 
 UserRouter.get("/githubcallback", passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
-    //req.user.token = req.token
+        req.user.token = req.token
     //res.redirect('/'); // Redirige al usuario a la página principal
     
         // req.user.token ya contiene el token JWT
-        res.cookie('auth', req.user.token, { maxAge: 60 * 60 * 1000 });
+       // res.cookie('auth', req.user.token, { maxAge: 60 * 60 * 1000 });
         res.redirect('/'); // Redirige al usuario a la página principal
 
     

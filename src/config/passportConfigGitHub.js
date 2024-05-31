@@ -9,7 +9,7 @@ dotenv.config();
 
 const initializeGitHubPassport = () => {
     const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
-    const SECRET_ID = process.env.GITHUB_SECRET_ID;
+    const SECRET_ID = process.env.GITHUB_CLIENT_SECRET;
 
     passport.use(
         'github',

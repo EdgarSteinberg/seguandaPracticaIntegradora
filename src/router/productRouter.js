@@ -7,7 +7,6 @@ const Productrouter = Router();
 const Manager = new ProductController();
 
 
-
 Productrouter.get("/", async (req, res) => {
     try {
         const products = await Manager.getAllProducts();

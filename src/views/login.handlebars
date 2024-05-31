@@ -1,6 +1,6 @@
 <div>
     <h1>LOGIN</h1>
-    
+
     <hr>
 
     <form class="box" method="post" action="/api/sessions/login">
@@ -13,11 +13,16 @@
         <button class="btnChat" type="submit">Login</button>
     </form>
     <span class="box">
-            <a href="/api/sessions/github">
+        <a href="/api/sessions/github">
             <button class="btnChat">Entrar Con GitHub</button>
-            </a>
+        </a>
     </span>
-    <span class="box"><a href="/register">Register</a></span>
+    {{!-- <span class="box"><a href="/register">Register</a></span> --}}
+    <span class="box">
+        <a href="/register">
+            <button class="btnChat">Register</button>
+        </a>
+    </span>
 </div>
 
 {{#if failLogin}}
