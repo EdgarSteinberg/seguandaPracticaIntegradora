@@ -17,10 +17,14 @@ const cartSchema = new mongoose.Schema({
             }
         ],
         default: []
+    },
+    user: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "users"
     }
 });
 //Con el middleware pre
-cartSchema.pre("find", function (){
+cartSchema.pre("find", function () {
     this.populate("products.product")
 })
 

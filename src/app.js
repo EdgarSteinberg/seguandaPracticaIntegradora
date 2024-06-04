@@ -13,6 +13,7 @@ import productRouter from "./router/productRouter.js";
 import cartRouter from "./router/cartRouter.js";
 import messageRouter from "./router/messageRouter.js"
 import userRouter from "./router/userRouter.js";
+import ticketRouter from "./router/ticketRouter.js";
 import initializatePassport from "./config/passportConfig.js";
 import initializeGitHubPassport from "./config/passportConfigGitHub.js";
 
@@ -46,7 +47,7 @@ app.use("/api/products", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/chat", messageRouter);
 app.use('/api/sessions', userRouter);
-
+app.use('/api/ticket', ticketRouter);
 
 //Vistas
 app.use("/", viewsRouter);

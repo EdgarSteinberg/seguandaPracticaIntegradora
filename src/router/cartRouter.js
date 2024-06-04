@@ -42,7 +42,8 @@ CartRouter.get('/:cid', async (req, res) => {
 CartRouter.post("/",async (req, res) => {
    
     try {
-        const result = await carts.createCart();
+        const {userId} = req.body
+        const result = await carts.createCart(userId);
         res.send({
             status: 'success',
             payload: result
@@ -141,6 +142,23 @@ CartRouter.delete("/:cid", async (req, res) => {
         
 }) 
 
+CartRouter.post('/:cid/purchase', async (req, res) => {
+    try{
+        const {cid} = req.params
+        const {purchaser} = req.body
+        
+        const result = await carts.cartPurchase(cid, purchaser)
+        res.send({
+            status : 'success',
+            payload: result
+        })
+    }catch (error){
+        res.status(400).send({
+            status: 'error',
+            message: error.message
+        })
+    }
+})
 
 
 

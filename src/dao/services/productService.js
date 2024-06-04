@@ -23,6 +23,9 @@ class ProductService {
         return await productModel.deleteOne({ _id: productId });
     }
 
+    async updateProductStock(pid, quantity) {
+        return await productModel.updateOne({ _id: pid }, { $inc: { stock: -quantity } });
+    }
 }
 
 export { ProductService };

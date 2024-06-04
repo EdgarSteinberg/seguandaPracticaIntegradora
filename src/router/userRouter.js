@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { userController } from '../controllers/userController.js';
 import passport from 'passport';
+import CurrentDTO from '../dao/dto/currentDTO.js';
 
 const UserRouter = Router();
 
@@ -36,9 +37,13 @@ UserRouter.post('/login', async (req, res) => {
 });
 
 UserRouter.get('/current', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    const userDTO = new CurrentDTO(req.user)
     res.send({
-        user: req.user
+        user: userDTO
     })
+    // res.send({
+    //     user: req.user
+    // })
 });
 
 UserRouter.get('/:uid', passport.authenticate('jwt', { session: false }), (req, res, next) => {

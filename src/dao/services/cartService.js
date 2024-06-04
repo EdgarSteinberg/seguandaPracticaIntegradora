@@ -5,13 +5,18 @@ class CartService {
     async getAll() {
         return await cartModel.find().lean();
     }
-
+    //Dejar el populate
     async getById(cid) {
-        return await cartModel.findOne({ _id: cid }).populate('products.product').lean();
+        return await cartModel.findOne({ _id: cid }).populate('products.product');
     }
 
     async create() {
         return await cartModel.create({})
+        // return await cartModel.create({ _id: uid, products: [] });
+    }
+    //Nuevaaaaa
+    async updateCartWithUser(cid, uid) {
+        return await cartModel.create(cid, uid);
     }
 
     async createProductInCart(cid, pid, update) {
@@ -26,22 +31,16 @@ class CartService {
         return await cartModel.findOneAndUpdate(cid, update, { new: true })
     }
 
-    async updateQuantity(cid, pid, quantity) {//funciona
+    async updateQuantity(cid, pid, quantity) {
         return await cartModel.findOneAndUpdate(cid, pid, quantity)
     }
 
-    async removeProducts(cid, update) {//funciona
+    async removeProducts(cid, update) {
         return await cartModel.findByIdAndUpdate(cid, update, { new: true });
     }
+
 }
 
 export { CartService }
 
 
-// async addProductToCart(cid, pid) {
-//     return await cartModel.findOneAndUpdate(
-//         { _id: cid, "products.product": pid },
-//         { $inc: { "products.$.quantity": 1 } },
-//         { new: true }
-//     );
-// }

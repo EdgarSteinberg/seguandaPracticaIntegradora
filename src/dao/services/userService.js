@@ -14,7 +14,8 @@ class UserService {
 
     async getById(uid) {
         try {
-            return await userModel.findOne({ _id: uid }).lean();
+            // return await userModel.findOne({ _id: uid }).lean();
+            return await userModel.findOne({ _id: uid }).lean()
         } catch (error) {
             console.error(error.message);
             throw new Error(`Usuario con id ${uid} no existe`)
