@@ -36,11 +36,7 @@ class CartController {
             throw new Error(`Error al crear el carrito`);
         }
     }
-    //////////NUEVA FUNCIONN/////
-    // async updateCartWithUser(cid, uid) {
-    //     return await cartModel.findByIdAndUpdate(cid, { user: uid }, { new: true });
-    // }
-    //Agregar al carrito cid un producto pid
+
     async addProductByID(cid, pid) {
         try {
             // Busca el carrito por su ID y actualiza los productos
@@ -148,11 +144,11 @@ class CartController {
     async cartPurchase(cid, purchaser) {
         try {
             const cart = await CartServiceRepository.getById(cid)//.populate('products.product');
-            console.log(cart)
+            //console.log(cart)
 
             const resultUserRepository = await UserServiceRespository.getById(purchaser)
             const purchaserEmail = resultUserRepository.email;
-            console.log(purchaserEmail);
+            //console.log(purchaserEmail);
 
             if (!cart) throw new Error('Carrito no encontrado');
 
@@ -162,6 +158,7 @@ class CartController {
             for (let item of cart.products) {
                 const product = item.product;
                 if (product.stock >= item.quantity) {
+                    console.log('este es el item', item.product._id)
                     validProducts.push(item);
                 } else {
                     failedProducts.push(product._id);
@@ -174,13 +171,16 @@ class CartController {
                     item.product._id,
                     item.quantity
                 );
-            }
+            };
 
             // Remover productos con stock insuficiente del carrito
             if (failedProducts.length > 0) {
                 cart.products = cart.products.filter(item => !failedProducts.includes(item.product._id));
                 await cart.save();
-            }
+            };
+
+            //Filtar solo el id del producto 
+            const validProductsIds = validProducts.map(product => product.product._id);
 
             // Crear el ticket
             const ticketData = {
@@ -188,16 +188,16 @@ class CartController {
                 purchase_datetime: Date.now(),
                 amount: await this.calculateTotalAmount(validProducts),
                 purchaser: purchaserEmail,
-                failed_products: failedProducts
             };
 
             const ticket = await TicketServiceRepository.createTicket(ticketData);
-            return { validProducts, failedProducts, cart, ticket };
+
+            return { validProducts: validProductsIds, failedProducts, cart, ticket };
             //return { validProducts, failedProducts, cart };
         } catch (error) {
             throw new Error('Error al procesar la compra: ' + error.message);
         }
-    }
+    };
 
     async generateUniqueCode() {
         try {
@@ -207,7 +207,7 @@ class CartController {
             console.log(error.message);
             throw new Error('Error al crear código aleatorio');
         }
-    }
+    };
 }
 
 export { CartController };

@@ -12,16 +12,10 @@ export default class CartRepository {
         return await this.dao.getById(cid)
     }
 
-    // async create() {
-    //     return await this.dao.create({})
-    // }
     async create(uid) {
         return await this.dao.create(uid);
     }
-    //Nuevaaaaa
-    async updateCartWithUser(cid, uid) {
-        return await this.dao.updateCartWithUser(cid, uid);
-    }
+
     async createProductInCart(cid, pid, update) {
         return await this.dao.createProductInCart(cid, pid, update)
     }
