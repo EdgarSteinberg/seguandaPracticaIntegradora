@@ -1,7 +1,9 @@
 import { Router } from 'express';
+import passport from 'passport';
 import { ProductController } from '../controllers/productController.js';
 import { uploader } from '../utils/multerUtil.js'
-
+import { authorization } from '../middlewares/authorization.js';
+import { authenticate} from '../middlewares/auth.js'
 const Productrouter = Router();
 
 const Manager = new ProductController();
@@ -40,7 +42,7 @@ Productrouter.get('/:pid', async (req, res) => {
     }
 });
 
-Productrouter.post('/', uploader.array('thumbnail', 3), async (req, res) => {
+Productrouter.post('/',passport.authenticate('jwt', { session: false }), authorization("admin"), uploader.array('thumbnail', 3), async (req, res) => {
     try {
         if (req.files) {
             req.body.thumbnail = [];
