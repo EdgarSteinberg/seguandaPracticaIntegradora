@@ -10,7 +10,7 @@
 
 //     async getAllUsers() {
 //        return await this.userService.getAll();
-      
+
 //     }
 
 //     async getUser(uid) {
@@ -25,7 +25,7 @@
 //         }
 
 //         return await this.userService.createRegister({ first_name, last_name, email, age, password, username });
-    
+
 //     }
 
 //     async login(email, password) {
@@ -35,7 +35,7 @@
 //         }
 //         try {
 //             const user = await this.userService.createLogin(email,password)
-         
+
 //             if (!user) throw new Error(errorMessage)
 
 //             if (isValidPassword(user, password)) {
@@ -58,19 +58,22 @@ import jwt from 'jsonwebtoken';
 //import { UserService } from '../dao/services/userService.js';
 import { UserServiceRespository } from '../repositories/index.js';
 import { isValidPassword } from "../utils/cryptoUtil.js";
+import { CartController } from './cartController.js';
 
-class userController{
+//const cartController = new CartController();
+
+class userController {
     // constructor() {
     //     this.userService = new UserService();
     // }
 
     async getAllUsers() {
-       return await UserServiceRespository.getAll();
-      
+        return await UserServiceRespository.getAll();
+
     }
 
     async getUser(uid) {
-       return await UserServiceRespository.getById(uid)
+        return await UserServiceRespository.getById(uid)
     }
 
     async register(user) {
@@ -79,9 +82,18 @@ class userController{
         if (!first_name || !last_name || !email || !age || !password || !username) {
             throw new Error('Error al registrar usuario');
         }
+        //const cartId = await cartController.createCart();
 
-        return await UserServiceRespository.createRegister({ first_name, last_name, email, age, password, username });
-    
+        return await UserServiceRespository.createRegister({
+            first_name,
+            last_name,
+            email,
+            age,
+            password,
+            username,
+            //cart: [{ cart: cartId }]
+        });
+
     }
 
     async login(email, password) {
@@ -90,8 +102,8 @@ class userController{
             throw new Error(errorMessage);
         }
         try {
-            const user = await UserServiceRespository.createLogin(email,password)
-         
+            const user = await UserServiceRespository.createLogin(email, password)
+
             if (!user) throw new Error(errorMessage)
 
             if (isValidPassword(user, password)) {
@@ -104,6 +116,10 @@ class userController{
             console.error(error.message)
             throw error;
         }
+    }
+
+    async updateUser(uid, updateData) {
+        return await UserServiceRespository.updateUser(uid, updateData);
     }
 }
 

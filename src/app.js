@@ -16,6 +16,7 @@ import userRouter from "./router/userRouter.js";
 import ticketRouter from "./router/ticketRouter.js";
 import initializatePassport from "./config/passportConfig.js";
 import initializeGitHubPassport from "./config/passportConfigGitHub.js";
+import fakerRouter from './router/fakerRouter.js'
 
 dotenv.config(); 
 
@@ -48,12 +49,14 @@ app.use("/api/cart", cartRouter);
 app.use("/api/chat", messageRouter);
 app.use('/api/sessions', userRouter);
 app.use('/api/ticket', ticketRouter);
+app.use('/api/faker', fakerRouter);
 
 //Vistas
 app.use("/", viewsRouter);
 app.use("/chat", messageRouter)
 app.use("/products", productRouter);
 app.use("/carts/:cid", cartRouter)
+app.use('/mockingproducts', fakerRouter);
 
 //Websocket
 const PORT = 8080;

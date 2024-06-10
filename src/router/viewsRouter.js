@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import passport from 'passport';
 
 import { ProductController } from '../controllers/productController.js';
 import { CartController } from '../controllers/cartController.js';
@@ -6,7 +7,7 @@ import { MessagesController } from '../controllers/messageController.js';
 
 import { authenticate, publicRoute } from '../middlewares/auth.js'
 import { authorization } from '../middlewares/authorization.js';
-
+import { getMockedProducts } from '../utils/fakerUtil.js';
 
 const Manager = new ProductController();
 const CartManager = new CartController();
@@ -56,7 +57,7 @@ router.get("/products", authenticate, async (req, res) => {
     }
 });
 
-router.get("/products/:pid", authenticate , authorization('user'), async (req, res) => {
+router.get("/products/:pid", passport.authenticate('jwt', { session: false }), authenticate, authorization('user'), async (req, res) => {
     const result = await Manager.getProductByID(req.params.pid)
 
     res.render("product",
@@ -168,6 +169,19 @@ router.get('/notFound', authenticate, (req, res) => {
             //user: req.cookies
 
             user: req.user
+        });
+});
+
+router.get("/mockingproducts", authenticate, authorization("admin"), async (req, res) => {
+
+    const products = getMockedProducts()
+
+    res.render(
+        'faker',
+        {
+            title: 'Coder Faker',
+            style: 'index.css',
+            products // Pasamos los productos al contexto de la vista
         });
 });
 

@@ -42,6 +42,18 @@ class UserService {
             throw new Error('Error al logearse');
         }
     }
+
+
+
+    async updateUser(id, updateData) {
+        try {
+            const updatedUser = await userModel.findByIdAndUpdate(id, updateData, { new: true }).lean();
+            return updatedUser;
+        } catch (error) {
+            console.error(error.message);
+            throw new Error('Error al actualizar el usuario');
+        }
+    }
 }
 
 

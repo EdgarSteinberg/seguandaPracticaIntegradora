@@ -28,6 +28,7 @@ class CartController {
     async createCart() {
         try {
             const carts = await CartServiceRepository.create();
+            //const carts = await CartServiceRepository.create({ user: userId });
             // return carts;
             console.log('Carrito creado:', carts);
             return carts._id; // Devuelve solo el _id del carrito creado
