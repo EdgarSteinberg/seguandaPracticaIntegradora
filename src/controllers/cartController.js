@@ -3,6 +3,10 @@ import { ProductServiceRespository } from "../repositories/index.js";
 import { TicketServiceRepository } from "../repositories/index.js";
 import { UserServiceRespository } from "../repositories/index.js";
 
+import CustomError from "../services/errors/CustomError.js";
+import { ErrorCodes } from "../services/errors/enums.js";
+import { generateCartIdErrorInfo } from "../services/errors/info.js";
+
 
 class CartController {
 
@@ -13,28 +17,56 @@ class CartController {
 
         } catch (error) {
             console.error(error.message);
-            throw new Error("Error al buscar los carritos");
+            CustomError.createError({
+                name: 'DatabaseError',
+                cause: error.message,
+                message: 'Error al buscar los carritos',
+                code: ErrorCodes.DATABASE_ERROR
+            });
         }
     }
 
     async getCartById(cid) {
-        const carts = await CartServiceRepository.getById(cid);
+        try {
+            const carts = await CartServiceRepository.getById(cid);
 
-        if (!carts) throw new Error(`El carrito ${cid} no existe!`)
+            if (!carts) {
+                CustomError.createError({
+                    name: 'InvalidParamError',
+                    cause: `Product ID ${cid} not found`,
+                    message: generateCartIdErrorInfo(cid),
+                    code: ErrorCodes.INVALID_PARAM
+                });
+                return;
+            }
 
-        return carts;
+            return carts;
+        } catch (error) {
+            console.error(error.message);
+            CustomError.createError({
+                name: 'DatabaseError',
+                cause: error.message,
+                message: 'Error al buscar el producto',
+                code: ErrorCodes.DATABASE_ERROR
+            });
+        }
+
     }
 
     async createCart() {
         try {
             const carts = await CartServiceRepository.create();
-            //const carts = await CartServiceRepository.create({ user: userId });
-            // return carts;
+
             console.log('Carrito creado:', carts);
             return carts._id; // Devuelve solo el _id del carrito creado
         } catch (error) {
             console.error(error.message);
-            throw new Error(`Error al crear el carrito`);
+            CustomError.createError({
+                name: 'DatabaseError',
+                cause: error.message,
+                message: 'Error al crear el carrito',
+                code: ErrorCodes.DATABASE_ERROR
+            });
         }
     }
 
@@ -59,9 +91,18 @@ class CartController {
 
             return cart;
         } catch (error) {
+            // Maneja el error creando un error personalizado
+            CustomError.createError({
+                name: 'DatabaseError',
+                cause: error.message,
+                message: 'Error al actualizar el carrito',
+                code: ErrorCodes.DATABASE_ERROR
+            });
+            // Lanza el error para que pueda ser manejado por el controlador de errores global, si lo hay
             throw new Error('Error al actualizar el carrito: ' + error.message);
         }
     }
+
     //Eliminar producto del carrito por su ID
     async deleteProductInCart(cid, pid) {
         try {
@@ -72,14 +113,30 @@ class CartController {
             );
 
             if (!cart) {
-                throw new Error(`El carrito ${cid} no existe`);
+                CustomError.createError({
+                    name: 'InvalidParamError',
+                    cause: `Product ID ${cid} not found`,
+                    message: generateCartIdErrorInfo(cid),
+                    code: ErrorCodes.INVALID_PARAM
+                });
+                return null;
             }
 
             return cart;
         } catch (error) {
+            // Maneja cualquier otro error creando un error personalizado
+            CustomError.createError({
+                name: 'DatabaseError',
+                cause: error.message,
+                message: 'Error al eliminar el producto del carrito',
+                code: ErrorCodes.DATABASE_ERROR
+            });
+            // Lanza el error para que pueda ser manejado por el controlador de errores global, si lo hay
             throw new Error('Error al eliminar el producto del carrito: ' + error.message);
         }
+
     }
+
     //Agregar productos al carrito
     async updateCart(cid, products) {
         try {
@@ -90,14 +147,26 @@ class CartController {
             );
 
             if (!cart) {
-                throw new Error(`El carrito ${cid} no existe`);
+                CustomError.createError({
+                    name: 'InvalidParamError',
+                    cause: `Product ID ${cid} not found`,
+                    message: generateCartIdErrorInfo(cid),
+                    code: ErrorCodes.INVALID_PARAM
+                });
+                return null;
             }
-
             return cart;
         } catch (error) {
+            CustomError.createError({
+                name: 'DatabaseError',
+                cause: error.message,
+                message: 'Error al actualizar el carrito',
+                code: ErrorCodes.DATABASE_ERROR
+            });
             throw new Error('Error al actualizar el carrito: ' + error.message);
         }
     }
+
     //Modifica la cantidad del producto en el carrito
     async updateProductQuantityInCart(cid, pid, quantity) {
         try {
@@ -108,12 +177,24 @@ class CartController {
             );
 
             if (!cart) {
-                throw new Error(`El carrito ${cid} o el producto ${pid} no existe`);
+                CustomError.createError({
+                    name: 'InvalidParamError',
+                    cause: `Product ID ${cid} not found`,
+                    message: generateCartIdErrorInfo(cid),
+                    code: ErrorCodes.INVALID_PARAM
+                });
+                return null;
             }
 
             return cart;
         } catch (error) {
-            throw new Error('Error al actualizar la cantidad del producto en el carrito: ' + error.message);
+            CustomError.createError({
+                name: 'DatabaseError',
+                cause: error.message,
+                message: 'Error al actualizar el carrito',
+                code: ErrorCodes.DATABASE_ERROR
+            });
+            throw new Error('Error al actualizar el carrito: ' + error.message);
         }
     }
 
@@ -125,91 +206,118 @@ class CartController {
                 { new: true }
             );
 
+            // Verifica si el carrito se actualizó correctamente
             if (!cart) {
-                throw new Error(`El carrito ${cid} no existe`);
+                // Si el carrito no se encontró, crea un error personalizado
+                CustomError.createError({
+                    name: 'NotFoundError',
+                    cause: `Cart ID ${cid} not found`,
+                    message: generateCartIdErrorInfo(cid),
+                    code: ErrorCodes.NOT_FOUND
+                });
+                // Devuelve null para indicar que no se encontró el carrito
+                return null;
             }
 
+            // Devuelve el carrito actualizado
             return cart;
         } catch (error) {
+            // Maneja cualquier otro error creando un error personalizado de base de datos
+            CustomError.createError({
+                name: 'DatabaseError',
+                cause: error.message,
+                message: 'Error al eliminar todos los productos del carrito',
+                code: ErrorCodes.DATABASE_ERROR
+            });
+            // Lanza el error para que pueda ser manejado por el controlador de errores global, si lo hay
             throw new Error('Error al eliminar todos los productos del carrito: ' + error.message);
         }
     }
+    
+
+
     async calculateTotalAmount(validProducts) {
-        let totalAmount = 0;
-        for (let item of validProducts) {
-            totalAmount += item.product.price * item.quantity;
+            let totalAmount = 0;
+            for (let item of validProducts) {
+                totalAmount += item.product.price * item.quantity;
+            }
+            return totalAmount;
         }
-        return totalAmount;
-    }
 
     async cartPurchase(cid, purchaser) {
-        try {
-            const cart = await CartServiceRepository.getById(cid)//.populate('products.product');
-            //console.log(cart)
+            try {
+                const cart = await CartServiceRepository.getById(cid)//.populate('products.product');
+                //console.log(cart)
 
-            const resultUserRepository = await UserServiceRespository.getById(purchaser)
-            const purchaserEmail = resultUserRepository.email;
-            //console.log(purchaserEmail);
+                const resultUserRepository = await UserServiceRespository.getById(purchaser)
+                const purchaserEmail = resultUserRepository.email;
+                //console.log(purchaserEmail);
 
-            if (!cart) throw new Error('Carrito no encontrado');
+                if (!cart) throw new Error('Carrito no encontrado');
 
-            const validProducts = [];
-            const failedProducts = [];
+                const validProducts = [];
+                const failedProducts = [];
 
-            for (let item of cart.products) {
-                const product = item.product;
-                if (product.stock >= item.quantity) {
-                    console.log('este es el item', item.product._id)
-                    validProducts.push(item);
-                } else {
-                    failedProducts.push(product._id);
+                for (let item of cart.products) {
+                    const product = item.product;
+                    if (product.stock >= item.quantity) {
+                        console.log('este es el item', item.product._id)
+                        validProducts.push(item);
+                    } else {
+                        failedProducts.push(product._id);
+                    }
                 }
+
+                // Restar el stock de los productos válidos
+                for (let item of validProducts) {
+                    await ProductServiceRespository.updateProductStock(
+                        item.product._id,
+                        item.quantity
+                    );
+                };
+
+                // Remover productos con stock insuficiente del carrito
+                if (failedProducts.length > 0) {
+                    cart.products = cart.products.filter(item => !failedProducts.includes(item.product._id));
+                    await cart.save();
+                };
+
+                //Filtar solo el id del producto 
+                const validProductsIds = validProducts.map(product => product.product._id);
+
+                // Crear el ticket
+                const ticketData = {
+                    code: await this.generateUniqueCode(),
+                    purchase_datetime: Date.now(),
+                    amount: await this.calculateTotalAmount(validProducts),
+                    purchaser: purchaserEmail,
+                };
+
+                const ticket = await TicketServiceRepository.createTicket(ticketData);
+
+                return { validProducts: validProductsIds, failedProducts, cart, ticket };
+                //return { validProducts, failedProducts, cart };
+            } catch (error) {
+                CustomError.createError({
+                    name: 'DatabaseError',
+                    cause: error.message,
+                    message: 'Error al procesar la compra',
+                    code: ErrorCodes.DATABASE_ERROR
+                })
+                throw new Error('Error al procesar la compra: ' + error.message);
             }
-
-            // Restar el stock de los productos válidos
-            for (let item of validProducts) {
-                await ProductServiceRespository.updateProductStock(
-                    item.product._id,
-                    item.quantity
-                );
-            };
-
-            // Remover productos con stock insuficiente del carrito
-            if (failedProducts.length > 0) {
-                cart.products = cart.products.filter(item => !failedProducts.includes(item.product._id));
-                await cart.save();
-            };
-
-            //Filtar solo el id del producto 
-            const validProductsIds = validProducts.map(product => product.product._id);
-
-            // Crear el ticket
-            const ticketData = {
-                code: await this.generateUniqueCode(),
-                purchase_datetime: Date.now(),
-                amount: await this.calculateTotalAmount(validProducts),
-                purchaser: purchaserEmail,
-            };
-
-            const ticket = await TicketServiceRepository.createTicket(ticketData);
-
-            return { validProducts: validProductsIds, failedProducts, cart, ticket };
-            //return { validProducts, failedProducts, cart };
-        } catch (error) {
-            throw new Error('Error al procesar la compra: ' + error.message);
-        }
-    };
+        };
 
     async generateUniqueCode() {
-        try {
-            const randomCode = Math.floor(Math.random() * 1000) + 1;
-            return randomCode;
-        } catch (error) {
-            console.log(error.message);
-            throw new Error('Error al crear código aleatorio');
-        }
-    };
-}
+            try {
+                const randomCode = Math.floor(Math.random() * 1000) + 1;
+                return randomCode;
+            } catch (error) {
+                console.log(error.message);
+                throw new Error('Error al crear código aleatorio');
+            }
+        };
+    }
 
 export { CartController };
 

@@ -1,6 +1,6 @@
 import passport from 'passport';
 import GitHubStrategy from 'passport-github2';
-import userModel from '../dao/models/userModel.js';
+import userModel from '../models/userModel.js';
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv';
 

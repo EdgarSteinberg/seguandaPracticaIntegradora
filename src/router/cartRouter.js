@@ -7,7 +7,7 @@ const CartRouter = Router();
 const carts = new CartController()
 
 
-CartRouter.get('/', async (req, res) => {
+CartRouter.get('/', async (req, res, next) => {
     try {
         const result = await carts.getAllCarts();
         res.send({
@@ -15,15 +15,11 @@ CartRouter.get('/', async (req, res) => {
             payload: result
         })
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            payload: error.message
-        })
+        next(error)
     }
 });
 
-CartRouter.get('/:cid', async (req, res) => {
-
+CartRouter.get('/:cid', async (req, res, next) => {
     try {
         const result = await carts.getCartById(req.params.cid);
         res.send({
@@ -31,15 +27,12 @@ CartRouter.get('/:cid', async (req, res) => {
             payload: result
         });
     } catch (error) {
-        res.status(400).send({
-            status: error,
-            message: error.message
-        });
+        next(error)
     }
 });
 
 
-CartRouter.post("/", async (req, res) => {
+CartRouter.post("/", async (req, res, next) => {
 
     try {
         const { userId } = req.body
@@ -49,15 +42,12 @@ CartRouter.post("/", async (req, res) => {
             payload: result
         });
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        next(error)
     }
 });
 
 
-CartRouter.post("/:cid/products/:pid", async (req, res) => {
+CartRouter.post("/:cid/products/:pid", async (req, res, next) => {
 
     try {
         const result = await carts.addProductByID(req.params.cid, req.params.pid);
@@ -66,15 +56,12 @@ CartRouter.post("/:cid/products/:pid", async (req, res) => {
             payload: result
         });
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        next(error)
     }
 
 })
 
-CartRouter.delete("/:cid/products/:pid", async (req, res) => {
+CartRouter.delete("/:cid/products/:pid", async (req, res, next) => {
 
     try {
         const result = await carts.deleteProductInCart(req.params.cid, req.params.pid);
@@ -83,15 +70,12 @@ CartRouter.delete("/:cid/products/:pid", async (req, res) => {
             payload: result
         });
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        next(error)
     }
 
 })
 
-CartRouter.put("/:cid", async (req, res) => {
+CartRouter.put("/:cid", async (req, res, next) => {
     try {
         const cid = req.params.cid;
         const result = await carts.updateCart(cid, req.body);
@@ -101,14 +85,11 @@ CartRouter.put("/:cid", async (req, res) => {
         });
 
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        next(error)
     }
 });
 
-CartRouter.put("/:cid/products/:pid", async (req, res) => {
+CartRouter.put("/:cid/products/:pid", async (req, res, next) => {
 
     try {
         const result = await carts.updateProductQuantityInCart(req.params.cid, req.params.pid, req.body.quantity);
@@ -117,15 +98,12 @@ CartRouter.put("/:cid/products/:pid", async (req, res) => {
             payload: result
         });
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        next(error)
     }
 
 })
 
-CartRouter.delete("/:cid", async (req, res) => {
+CartRouter.delete("/:cid", async (req, res, next) => {
 
     try {
         const result = await carts.removeAllProductsFromCart(req.params.cid);
@@ -134,15 +112,12 @@ CartRouter.delete("/:cid", async (req, res) => {
             payload: result
         });
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        next(error)
     }
 
 })
 
-CartRouter.post('/:cid/purchase', async (req, res) => {
+CartRouter.post('/:cid/purchase', async (req, res, next) => {
     try {
         const { cid } = req.params
         const { purchaser } = req.body
@@ -161,10 +136,7 @@ CartRouter.post('/:cid/purchase', async (req, res) => {
             payload: result
         })
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        })
+        next(error)
     }
 })
 

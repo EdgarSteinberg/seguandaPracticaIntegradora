@@ -1,4 +1,4 @@
-import ticketModel from "../models/ticketModel.js";
+import ticketModel from "../../models/ticketModel.js";
 
 class TicketService {
 

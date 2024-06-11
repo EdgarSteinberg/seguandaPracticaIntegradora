@@ -1,4 +1,4 @@
-import messageModel from '../models/messagesModel.js';
+import messageModel from '../../models/messagesModel.js';
 
 
 class MessageService {

@@ -8,7 +8,7 @@ const MessageRouter = Router();
 
 const Messages = new MessagesController();
 
-MessageRouter.get("/", async (req, res) => {
+MessageRouter.get("/", async (req, res, next) => {
     try {
         const result = await Messages.getAllMessages();
         res.send({
@@ -16,14 +16,11 @@ MessageRouter.get("/", async (req, res) => {
             payload: result
         });
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            payload: error.message
-        });
+        next(next)
     }
 });
 
-MessageRouter.post("/",passport.authenticate('jwt', { session: false }), authorization("user"), async (req, res) => {
+MessageRouter.post("/",passport.authenticate('jwt', { session: false }), authorization("user"), async (req, res, next) => {
     try {
         const result = await Messages.create(req.body);
         res.send({
@@ -31,10 +28,7 @@ MessageRouter.post("/",passport.authenticate('jwt', { session: false }), authori
             payload: result
         });
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+      next(error)
     }
 });
 

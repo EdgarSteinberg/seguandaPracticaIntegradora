@@ -3,13 +3,13 @@ import passport from 'passport';
 import { ProductController } from '../controllers/productController.js';
 import { uploader } from '../utils/multerUtil.js'
 import { authorization } from '../middlewares/authorization.js';
-import { authenticate} from '../middlewares/auth.js'
+import { authenticate } from '../middlewares/auth.js'
 const Productrouter = Router();
 
 const Manager = new ProductController();
 
 
-Productrouter.get("/", async (req, res) => {
+Productrouter.get("/", async (req, res, next) => {
     try {
         const products = await Manager.getAllProducts();
 
@@ -17,15 +17,12 @@ Productrouter.get("/", async (req, res) => {
             status: 'success',
             payload: products
         });
-    }catch(error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+    } catch (error) {
+        next(error); // Pasa el error al middleware de manejo de errores
     }
 });
 
-Productrouter.get('/:pid', async (req, res) => {
+Productrouter.get('/:pid', async (req, res, next) => {
 
     try {
         const result = await Manager.getProductByID(req.params.pid);
@@ -35,14 +32,11 @@ Productrouter.get('/:pid', async (req, res) => {
             payload: result
         });
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        next(error); // Pasa el error al middleware de manejo de errores
     }
 });
 
-Productrouter.post('/',passport.authenticate('jwt', { session: false }), authorization("admin"), uploader.array('thumbnail', 3), async (req, res) => {
+Productrouter.post('/', passport.authenticate('jwt', { session: false }), authorization("admin"), uploader.array('thumbnail', 3), async (req, res, next) => {
     try {
         if (req.files) {
             req.body.thumbnail = [];
@@ -57,14 +51,12 @@ Productrouter.post('/',passport.authenticate('jwt', { session: false }), authori
             payload: result
         });
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        next(error); // Pasa el error al middleware de manejo de errores
+
     }
 });
 
-Productrouter.put("/:pid", uploader.array('thumbnails', 3), async (req, res) => {
+Productrouter.put("/:pid", uploader.array('thumbnails', 3), async (req, res, next) => {
     if (req.files) {
         req.body.thumbnail = [];
         req.files.forEach((file) => {
@@ -81,25 +73,20 @@ Productrouter.put("/:pid", uploader.array('thumbnails', 3), async (req, res) => 
         });
 
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        next(error); // Pasa el error al middleware de manejo de errores
     }
 });
 
-Productrouter.delete("/:pid", async (req, res) => {
+Productrouter.delete("/:pid", async (req, res, next) => {
     try {
         const pid = req.params.pid;
-        
+
         res.send(await Manager.deleteProduct(pid));
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        next(error); // Pasa el error al middleware de manejo de errores
     }
 });
 
 
 export default Productrouter;
+

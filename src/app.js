@@ -17,6 +17,7 @@ import ticketRouter from "./router/ticketRouter.js";
 import initializatePassport from "./config/passportConfig.js";
 import initializeGitHubPassport from "./config/passportConfigGitHub.js";
 import fakerRouter from './router/fakerRouter.js'
+import errorHandler from './middlewares/errors/index.js';
 
 dotenv.config(); 
 
@@ -50,7 +51,8 @@ app.use("/api/chat", messageRouter);
 app.use('/api/sessions', userRouter);
 app.use('/api/ticket', ticketRouter);
 app.use('/api/faker', fakerRouter);
-
+//Errors 
+app.use(errorHandler);
 //Vistas
 app.use("/", viewsRouter);
 app.use("/chat", messageRouter)

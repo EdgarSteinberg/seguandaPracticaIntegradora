@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-import userModel from '../dao/models/userModel.js';
+import userModel from '../models/userModel.js';
 
 export const authenticate = async (req, res, next) => {
     const token = req.cookies.auth;

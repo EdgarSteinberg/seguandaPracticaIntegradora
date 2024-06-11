@@ -13,7 +13,7 @@
 
 //     async create(userData){
 //         const {user, message} = userData
-    
+
 //         if(!user || !message){
 //             throw new Error("Error al crear el mensaje: faltan campos requeridos");
 //         }
@@ -23,14 +23,14 @@
 //                 user,
 //                 //correoDelUsuario,
 //                 message});
-                
+
 //             return result;
 //         }catch(error){
 //             console.error(error.message)
 //             throw new Error("Error al crear el message")
 //         }
 //     }
-    
+
 
 // }
 
@@ -42,6 +42,9 @@
 
 //import { MessageService } from "../dao/services/messageService.js";
 import { MessageServiceRepositori } from "../repositories/index.js";
+import CustomError from "../services/errors/CustomError.js";
+import { ErrorCodes } from "../services/errors/enums.js";
+import { generateMessageError } from "../services/errors/info.js";
 
 class MessagesController {
 
@@ -53,26 +56,37 @@ class MessagesController {
         return await MessageServiceRepositori.getAllMessages();
     }
 
-    async create(userData){
-        const {user, message} = userData
-    
-        if(!user || !message){
-            throw new Error("Error al crear el mensaje: faltan campos requeridos");
+    async create(userData) {
+        const { user, message } = userData
+
+        if (!user || !message) {
+            CustomError.createError({
+                name: 'MessageCreationError',
+                cause: generateMessageError(userData),
+                message: 'User or message not provided',
+                code: ErrorCodes.INVALID_TYPES_ERROR
+            });
         }
 
-        try{
+        try {
             const result = await MessageServiceRepositori.createMessage({
                 user,
                 //correoDelUsuario,
-                message});
-                
+                message
+            });
+
             return result;
-        }catch(error){
+        } catch (error) {
             console.error(error.message)
-            throw new Error("Error al crear el message")
+            CustomError.createError({
+                name: 'DatabaseError',
+                cause: error.message,
+                message: 'Error al crear el message',
+                code: ErrorCodes.DATABASE_ERROR
+            });
         }
     }
-    
+
 
 }
 

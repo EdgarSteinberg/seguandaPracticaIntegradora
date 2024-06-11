@@ -1,27 +1,24 @@
+import { ProductServiceRespository } from '../repositories/index.js';
+import CustomError from '../services/errors/CustomError.js';
+import { ErrorCodes} from '../services/errors/enums.js';
+import { generateProductIdErrorInfo, generateProductErrorInfo } from '../services/errors/info.js';
 
-import {ProductServiceRespository} from '../repositories/index.js'
 
 class ProductController {
-
-    // constructor() {
-    //     this.productService = new ProductService();
-    // }
-
     async getAllProducts(queryParams = {}) {
         try {
             // Obtener los parámetros de la consulta
             const { page = 1, limit = 10, sort = null, category = null } = queryParams;
-    
+
             // Construir la consulta a la base de datos
             const options = {
                 page: parseInt(page),
                 limit: parseInt(limit),
                 lean: true
             };
-            
+
             const searchQuery = category ? { category: category.toLowerCase() } : {};
 
-        
             if (sort) {
                 if (sort === 'asc') {
                     options.sort = { price: 1 };
@@ -32,12 +29,12 @@ class ProductController {
 
             // Obtener los resultados paginados
             const result = await ProductServiceRespository.getAll(searchQuery, options);
-    
+
             // Construir los enlaces de paginación
             const baseURL = "http://localhost:8080/products";
             const prevLink = result.hasPrevPage ? `${baseURL}?page=${result.prevPage}` : null;
             const nextLink = result.hasNextPage ? `${baseURL}?page=${result.nextPage}` : null;
-    
+
             // Devolver los resultados en el formato correcto
             return {
                 status: "success",
@@ -53,87 +50,104 @@ class ProductController {
             };
         } catch (error) {
             console.error(error.message);
-            throw new Error("Error al buscar los productos");
+            CustomError.createError({
+                name: 'DatabaseError',
+                cause: error.message,
+                message: 'Error al buscar los productos',
+                code: ErrorCodes.DATABASE_ERROR
+            });
         }
     }
-    
-    
 
     async getProductByID(pid) {
-        const product = await ProductServiceRespository.getById({ _id: pid });
-
-        if (!product) throw new Error(`El producto ${pid} no existe!`);
-
-        return product;
+        try {
+            const product = await ProductServiceRespository.getById({ _id: pid });
+            if (!product) {
+                CustomError.createError({
+                    name: 'InvalidParamError',
+                    cause: `Product ID ${pid} not found`,
+                    message: generateProductIdErrorInfo(pid),
+                    code: ErrorCodes.INVALID_PARAM
+                });
+                return;
+            }
+            return product;
+        } catch (error) {
+            console.error(error.message);
+            CustomError.createError({
+                name: 'DatabaseError',
+                cause: error.message,
+                message: 'Error al buscar el producto',
+                code: ErrorCodes.DATABASE_ERROR
+            });
+        }
     }
 
-
     async createProduct(producto) {
-        console.log("Datos del producto recibidos:", producto)
         const { title, description, code, price, stock, category, thumbnail } = producto;
-        console.log('Datos del producto recibidos:', producto); 
-        
-        // Verifica si alguno de los campos requeridos está vacío
+
         if (!title || !description || !code || !price || !stock || !category) {
-            throw new Error('Error al crear el producto: Uno o más campos requeridos están vacíos');
+            CustomError.createError({
+                name: 'InvalidTypesError',
+                cause: generateProductErrorInfo(producto),
+                message: 'Error al crear el producto: Uno o más campos requeridos están vacíos',
+                code: ErrorCodes.INVALID_TYPES_ERROR
+            });
         }
-    
-        // Registra el objeto de producto para verificar sus valores
-        console.log('Objeto de producto:', producto);
-    
+
         try {
+              
             const result = await ProductServiceRespository.create({ title, description, code, price, stock, category, thumbnail: thumbnail ?? [] });
             return result;
         } catch (error) {
             console.error(error.message);
-            throw new Error("Error al crear el producto")
+            CustomError.createError({
+                name: 'DatabaseError',
+                cause: error.message,
+                message: 'Error al crear el producto',
+                code: ErrorCodes.DATABASE_ERROR
+            });
         }
     }
-    
 
     async updateProduct(id, producto) {
         try {
             const result = await ProductServiceRespository.productUpdate({ _id: id }, producto);
             return result;
-
         } catch (error) {
             console.error(error.message);
-            throw new Error('Error al actualizar el producto');
-
+            CustomError.createError({
+                name: 'DatabaseError',
+                cause: error.message,
+                message: 'Error al actualizar el producto',
+                code: ErrorCodes.DATABASE_ERROR
+            });
         }
     }
-
 
     async deleteProduct(productId) {
         try {
-            const result = await ProductServiceRespository.productDelete({ _id: productId});
-
-            if (result.deletedCount === 0) throw new Error(`El producto ${productId} no existe`);
-
+            const result = await ProductServiceRespository.productDelete({ _id: productId });
+            if (result.deletedCount === 0) {
+                CustomError.createError({
+                    name: 'InvalidParamError',
+                    cause: `Product ID ${productId} not found`,
+                    message: `El producto ${productId} no existe`,
+                    code: ErrorCodes.INVALID_PARAM
+                });
+            }
             return result;
-
         } catch (error) {
             console.error(error.message);
-            throw new Error('Error al eliminar el producto');
+            CustomError.createError({
+                name: 'DatabaseError',
+                cause: error.message,
+                message: 'Error al eliminar el producto',
+                code: ErrorCodes.DATABASE_ERROR
+            });
         }
     }
-
 }
 
 export { ProductController };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
