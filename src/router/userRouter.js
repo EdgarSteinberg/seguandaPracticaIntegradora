@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { userController } from '../controllers/userController.js';
 import passport from 'passport';
 import CurrentDTO from '../dao/dto/currentDTO.js';
+import {publicRoute,authenticate} from '../middlewares/auth.js'
 
 const UserRouter = Router();
 
@@ -68,24 +69,29 @@ UserRouter.post("/logout", (req, res) => {
 });
 
 
-UserRouter.get("/github", passport.authenticate('github', { scope: ['user.email'] }), async (req, res) => {
-    // console.log(req.user);
+// UserRouter.get("/github",authenticate, passport.authenticate('github', { scope: ['user.email'] }), async (req, res) => {
+//     // console.log(req.user);
 
-    res.cookie('auth', req.user.token, { maxAge: 60 * 60 * 1000 }).send({
-        status: 'success',
-        message: 'success'
-    }
-    )
+//     res.cookie('auth', req.user.token, { maxAge: 60 * 60 * 1000 }).send({
+//         status: 'success',
+//         message: 'success'
+//     });
+// });
+
+// UserRouter.get("/githubcallback", passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
+//     req.user.token = req.token
+
+//     res.redirect('/'); // Redirige al usuario a la página principal
+
+
+// });
+
+UserRouter.get('/github', authenticate, passport.authenticate('github', { scope: ['user:email'] }));
+
+UserRouter.get('/githubcallback', passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
+    const token = jwt.sign(req.user, SECRET_KEY, { expiresIn: '1h' });
+    console.log("GitHub Callback Token:", token); // Log to verify token is being set
+    res.cookie('auth', token, { maxAge: 60 * 60 * 1000 }).redirect('/');
 });
 
-UserRouter.get("/githubcallback", passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
-    req.user.token = req.token
-    //res.redirect('/'); // Redirige al usuario a la página principal
-
-    // req.user.token ya contiene el token JWT
-    // res.cookie('auth', req.user.token, { maxAge: 60 * 60 * 1000 });
-    res.redirect('/'); // Redirige al usuario a la página principal
-
-
-});
 export default UserRouter;

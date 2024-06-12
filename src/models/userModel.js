@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { createHash } from '../utils/cryptoUtil.js';
+import { createHash } from '../../utils/cryptoUtil.js';
 
 const userCollection = "users";
 
