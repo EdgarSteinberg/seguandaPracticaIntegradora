@@ -1,9 +1,11 @@
 import jwt from 'jsonwebtoken';
+
 import { UserServiceRespository } from '../repositories/index.js';
 import { isValidPassword } from "../utils/cryptoUtil.js";
 import CustomError from '../services/errors/CustomError.js';
-import { ErrorCodes } from '../services/errors/enums.js';
+import { ErrorCodes } from '../services/errors/errorCodes.js';
 import { generateUserErrorInfo, generateUserIdErrorInfo, generateLoginErrorInfo} from '../services/errors/info.js';
+import { devLogger as logger } from '../logger.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -27,7 +29,8 @@ class userController {
             }
             return user;
         } catch (error) {
-            console.error(error.message);
+            //console.error(error.message);
+            logger.error(error.message);
             CustomError.createError({
                 name: 'DatabaseError',
                 cause: error.message,
@@ -59,7 +62,8 @@ class userController {
                 username,
             });
         } catch (error) {
-            console.error(error.message);
+            //console.error(error.message);
+            logger.error(error.message);
             CustomError.createError({
                 name: 'DatabaseError',
                 cause: error.message,
@@ -103,7 +107,8 @@ class userController {
                 code: ErrorCodes.INVALID_PARAM
             });
         } catch (error) {
-            console.error(error.message);
+            //console.error(error.message);
+            logger.error(error.message);
             throw CustomError.createError({
                 name: 'DatabaseError',
                 cause: error.message,
@@ -118,7 +123,8 @@ class userController {
         try {
             return await UserServiceRespository.updateUser(uid, updateData);
         } catch (error) {
-            console.error(error.message);
+            //console.error(error.message);
+            logger.error(error.message);
             CustomError.createError({
                 name: 'DatabaseError',
                 cause: error.message,

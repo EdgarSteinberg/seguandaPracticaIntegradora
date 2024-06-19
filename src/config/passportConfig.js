@@ -6,6 +6,7 @@ const JWTStratergy = jwt.Strategy;
 
 dotenv.config();
 const secretOrKey = process.env.SECRET_KEY;
+
 const initializatePassport = () => {
  
     // Estrategia de autenticación JWT

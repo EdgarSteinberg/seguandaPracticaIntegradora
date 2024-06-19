@@ -18,6 +18,8 @@ import initializatePassport from "./config/passportConfig.js";
 import initializeGitHubPassport from "./config/passportConfigGitHub.js";
 import fakerRouter from './router/fakerRouter.js'
 import errorHandler from './middlewares/errors/index.js';
+import addLogger from "./logger.js";
+import loggerTestRouter from "./router/loggerRouter.js"
 
 dotenv.config(); 
 
@@ -51,8 +53,13 @@ app.use("/api/chat", messageRouter);
 app.use('/api/sessions', userRouter);
 app.use('/api/ticket', ticketRouter);
 app.use('/api/faker', fakerRouter);
+// Ruta para testear los logs
+app.use('/api', loggerTestRouter);
 //Errors 
 app.use(errorHandler);
+//Logger
+app.use(addLogger);
+
 //Vistas
 app.use("/", viewsRouter);
 app.use("/chat", messageRouter)

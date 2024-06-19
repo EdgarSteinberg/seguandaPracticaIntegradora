@@ -1,13 +1,10 @@
-//import { TicketService } from "../dao/services/ticketService.js";
 import { TicketServiceRepository } from "../repositories/index.js";
 import { CartServiceRepository } from "../repositories/index.js";
 import { UserServiceRespository } from "../repositories/index.js";
+import { devLogger as logger } from '../logger.js';
 
 class TicketController {
-    // constructor() {
-    //     this.ticketService = new TicketService();
-
-    // }
+   
     async getAllTickets() {
         return await TicketServiceRepository.getAll();
     }
@@ -25,18 +22,14 @@ class TicketController {
 
         const resultUserRepository = await UserServiceRespository.getById(purchaser)
         const purchaserEmail = resultUserRepository.email;
-        console.log(purchaserEmail);
+        //console.log(purchaserEmail);
+        logger.info(`Email del comprador: ${purchaserEmail}`);
 
-    
         const resultCartRespository = await CartServiceRepository.getById(cart)
         const cartProducts = resultCartRespository.products
-        console.log("Productos del carrito:", cartProducts);
+        //console.log("Productos del carrito:", cartProducts);
+        logger.info("Productos del carrito:", cartProducts);
 
-        //const currentTicket = cartProducts.filter(product => products.includes(product.product._id.toString()));
-
-        //console.log("Precios de los productos:", currentTicket.map(product => product.product.price));
-
-        //const amount = currentTicket.reduce((acc, product) => acc + product.product.price, 0);
         const amount = cartProducts.reduce((acc, cartItem) => acc + (cartItem.product.price * cartItem.quantity), 0);
         try {
             const code = await this.generateUniqueCode();
@@ -50,10 +43,12 @@ class TicketController {
             };
 
             const result = await TicketServiceRepository.createTicket(newTicket);
-            await CartServiceRepository.updateCartWithTicket(cart, result._id);
+            //await CartServiceRepository.updateCartWithTicket(cart, result._id);
+            logger.info(`Ticket creado exitosamente: ${JSON.stringify(result)}`);
             return result
         } catch (error) {
-            console.error(error.message);
+            //console.error(error.message);
+            logger.error(`Error al crear el ticket: ${error.message}`);
             throw new Error("Error al crear ticket")
         }
     }
@@ -63,7 +58,8 @@ class TicketController {
             const randomCode = Math.floor(Math.random() * 1000) + 1;
             return randomCode
         } catch (error) {
-            console.log(error.message);
+            //console.log(error.message);
+            logger.error(`Error al generar código único: ${error.message}`);
             throw new Error('Error al crear code random')
         }
     }

@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { CartController } from '../controllers/cartController.js';
-
+import addLogger from '../logger.js';
 
 const CartRouter = Router();
 
 const carts = new CartController()
 
 
-CartRouter.get('/', async (req, res, next) => {
+CartRouter.get('/',addLogger, async (req, res, next) => {
     try {
         const result = await carts.getAllCarts();
         res.send({
@@ -15,11 +15,12 @@ CartRouter.get('/', async (req, res, next) => {
             payload: result
         })
     } catch (error) {
+        req.logger.error(`Error al buscar el carrito ${error.message}`)
         next(error)
     }
 });
 
-CartRouter.get('/:cid', async (req, res, next) => {
+CartRouter.get('/:cid', addLogger, async (req, res, next) => {
     try {
         const result = await carts.getCartById(req.params.cid);
         res.send({
@@ -27,12 +28,13 @@ CartRouter.get('/:cid', async (req, res, next) => {
             payload: result
         });
     } catch (error) {
+        req.logger.error(`Error al buscar el carrito con ID: ${req.params.cid} ${error.message}`)
         next(error)
     }
 });
 
 
-CartRouter.post("/", async (req, res, next) => {
+CartRouter.post("/",addLogger, async (req, res, next) => {
 
     try {
         const { userId } = req.body
@@ -42,12 +44,13 @@ CartRouter.post("/", async (req, res, next) => {
             payload: result
         });
     } catch (error) {
+        req.logger.error(`Error al crearr el carrito  ${error.message}`)
         next(error)
     }
 });
 
 
-CartRouter.post("/:cid/products/:pid", async (req, res, next) => {
+CartRouter.post("/:cid/products/:pid", addLogger, async (req, res, next) => {
 
     try {
         const result = await carts.addProductByID(req.params.cid, req.params.pid);
@@ -56,12 +59,13 @@ CartRouter.post("/:cid/products/:pid", async (req, res, next) => {
             payload: result
         });
     } catch (error) {
+        req.logger.error(`Error al añadir producto al carrito con ID: ${req.params.pid} ${error.message}`)
         next(error)
     }
 
 })
 
-CartRouter.delete("/:cid/products/:pid", async (req, res, next) => {
+CartRouter.delete("/:cid/products/:pid",addLogger, async (req, res, next) => {
 
     try {
         const result = await carts.deleteProductInCart(req.params.cid, req.params.pid);
@@ -70,12 +74,13 @@ CartRouter.delete("/:cid/products/:pid", async (req, res, next) => {
             payload: result
         });
     } catch (error) {
+        req.logger.error(`Error al eliminar producto del carrito con ID: ${req.params.cid} ${error.message}`)
         next(error)
     }
 
 })
 
-CartRouter.put("/:cid", async (req, res, next) => {
+CartRouter.put("/:cid", addLogger,async (req, res, next) => {
     try {
         const cid = req.params.cid;
         const result = await carts.updateCart(cid, req.body);
@@ -85,11 +90,12 @@ CartRouter.put("/:cid", async (req, res, next) => {
         });
 
     } catch (error) {
+        req.logger.error(`Error al actualizar el carrito con ID: ${req.params.cid} ${error.message}`)
         next(error)
     }
 });
 
-CartRouter.put("/:cid/products/:pid", async (req, res, next) => {
+CartRouter.put("/:cid/products/:pid",addLogger, async (req, res, next) => {
 
     try {
         const result = await carts.updateProductQuantityInCart(req.params.cid, req.params.pid, req.body.quantity);
@@ -98,12 +104,13 @@ CartRouter.put("/:cid/products/:pid", async (req, res, next) => {
             payload: result
         });
     } catch (error) {
+        req.logger.error(`Error al actualizar la cantidad del producto en el carrito con ID: ${req.params.cid} ${error.message}`)
         next(error)
     }
 
 })
 
-CartRouter.delete("/:cid", async (req, res, next) => {
+CartRouter.delete("/:cid", addLogger, async (req, res, next) => {
 
     try {
         const result = await carts.removeAllProductsFromCart(req.params.cid);
@@ -112,12 +119,13 @@ CartRouter.delete("/:cid", async (req, res, next) => {
             payload: result
         });
     } catch (error) {
+        req.logger.error(`Error al eliminar todos los productos del carrito con ID: ${req.params.cid} ${error.message}`)
         next(error)
     }
 
 })
 
-CartRouter.post('/:cid/purchase', async (req, res, next) => {
+CartRouter.post('/:cid/purchase',addLogger, async (req, res, next) => {
     try {
         const { cid } = req.params
         const { purchaser } = req.body
@@ -136,6 +144,7 @@ CartRouter.post('/:cid/purchase', async (req, res, next) => {
             payload: result
         })
     } catch (error) {
+        req.logger.error(`Error al procesar la compra para el carrito con ID: ${req.params.cid}: ${error.message}`);
         next(error)
     }
 })

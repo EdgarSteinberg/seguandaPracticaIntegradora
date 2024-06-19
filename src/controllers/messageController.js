@@ -1,56 +1,11 @@
-// import { MessageService } from "../dao/services/messageService.js";
-
-
-// class MessagesController {
-
-//     constructor(){
-//         this.messageService = new MessageService();
-//     }
-
-//     async getAllMessages() {
-//         return await this.messageService.getAll();
-//     }
-
-//     async create(userData){
-//         const {user, message} = userData
-
-//         if(!user || !message){
-//             throw new Error("Error al crear el mensaje: faltan campos requeridos");
-//         }
-
-//         try{
-//             const result = await this.messageService.createMessage({
-//                 user,
-//                 //correoDelUsuario,
-//                 message});
-
-//             return result;
-//         }catch(error){
-//             console.error(error.message)
-//             throw new Error("Error al crear el message")
-//         }
-//     }
-
-
-// }
-
-// export { MessagesController };
-
-
-
-
-
 //import { MessageService } from "../dao/services/messageService.js";
 import { MessageServiceRepositori } from "../repositories/index.js";
 import CustomError from "../services/errors/CustomError.js";
-import { ErrorCodes } from "../services/errors/enums.js";
+import { ErrorCodes } from "../services/errors/errorCodes.js";
 import { generateMessageError } from "../services/errors/info.js";
+import { devLogger as logger } from '../logger.js';
 
 class MessagesController {
-
-    // constructor(){
-    //     this.messageService = new MessageService();
-    // }
 
     async getAllMessages() {
         return await MessageServiceRepositori.getAllMessages();
@@ -77,7 +32,8 @@ class MessagesController {
 
             return result;
         } catch (error) {
-            console.error(error.message)
+            //console.error(error.message)
+            logger.error(`Error al crear el mensaje ${error.message}`)
             CustomError.createError({
                 name: 'DatabaseError',
                 cause: error.message,

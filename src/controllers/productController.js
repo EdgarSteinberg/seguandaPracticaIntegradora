@@ -1,13 +1,14 @@
 import { ProductServiceRespository } from '../repositories/index.js';
 import CustomError from '../services/errors/CustomError.js';
-import { ErrorCodes} from '../services/errors/enums.js';
+import { ErrorCodes } from '../services/errors/errorCodes.js';
 import { generateProductIdErrorInfo, generateProductErrorInfo } from '../services/errors/info.js';
-
+import { devLogger as logger } from '../logger.js';
 
 class ProductController {
     async getAllProducts(queryParams = {}) {
         try {
             // Obtener los parámetros de la consulta
+            logger.debug('Fetching all products with query params:', queryParams);
             const { page = 1, limit = 10, sort = null, category = null } = queryParams;
 
             // Construir la consulta a la base de datos
@@ -49,7 +50,8 @@ class ProductController {
                 nextLink: nextLink
             };
         } catch (error) {
-            console.error(error.message);
+            //console.error(error.message);
+            logger.error(`Error fetching products: ${error.message}`)
             CustomError.createError({
                 name: 'DatabaseError',
                 cause: error.message,
@@ -73,7 +75,8 @@ class ProductController {
             }
             return product;
         } catch (error) {
-            console.error(error.message);
+            //console.error(error.message);
+            logger.error(`Error fetching product with ID: ${pid}: ${error.message}`);
             CustomError.createError({
                 name: 'DatabaseError',
                 cause: error.message,
@@ -87,6 +90,7 @@ class ProductController {
         const { title, description, code, price, stock, category, thumbnail } = producto;
 
         if (!title || !description || !code || !price || !stock || !category) {
+            logger.warning('Faltan campos obligatorios al crear el producto')
             CustomError.createError({
                 name: 'InvalidTypesError',
                 cause: generateProductErrorInfo(producto),
@@ -96,11 +100,13 @@ class ProductController {
         }
 
         try {
-              
+            logger.debug('Creating product with data:', producto);
             const result = await ProductServiceRespository.create({ title, description, code, price, stock, category, thumbnail: thumbnail ?? [] });
             return result;
+       
         } catch (error) {
-            console.error(error.message);
+            //console.error(error.message);
+            logger.error(`Error creating product: ${error.message}`);
             CustomError.createError({
                 name: 'DatabaseError',
                 cause: error.message,
@@ -114,8 +120,10 @@ class ProductController {
         try {
             const result = await ProductServiceRespository.productUpdate({ _id: id }, producto);
             return result;
+       
         } catch (error) {
-            console.error(error.message);
+            //console.error(error.message);
+            logger.error(`Error al actualizar el producto con ID: ${id} ${error.message}`);
             CustomError.createError({
                 name: 'DatabaseError',
                 cause: error.message,
@@ -129,6 +137,7 @@ class ProductController {
         try {
             const result = await ProductServiceRespository.productDelete({ _id: productId });
             if (result.deletedCount === 0) {
+                logger.warning(`Product with ID: ${productId} not found`);
                 CustomError.createError({
                     name: 'InvalidParamError',
                     cause: `Product ID ${productId} not found`,
@@ -136,9 +145,12 @@ class ProductController {
                     code: ErrorCodes.INVALID_PARAM
                 });
             }
+            logger.info(`Product with ID: ${productId} deleted successfully`);
             return result;
+       
         } catch (error) {
-            console.error(error.message);
+            //console.error(error.message);
+            logger.error(`Error deleting product with ID: ${productId}: ${error.message}`);
             CustomError.createError({
                 name: 'DatabaseError',
                 cause: error.message,

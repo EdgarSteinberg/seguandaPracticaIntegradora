@@ -1,15 +1,19 @@
 import { Router } from 'express';
 import passport from 'passport';
+
 import { ProductController } from '../controllers/productController.js';
-import { uploader } from '../utils/multerUtil.js'
 import { authorization } from '../middlewares/authorization.js';
+
+import { uploader } from '../utils/multerUtil.js'
 import { authenticate } from '../middlewares/auth.js'
+import addLogger from '../logger.js';
+
 const Productrouter = Router();
 
 const Manager = new ProductController();
 
 
-Productrouter.get("/", async (req, res, next) => {
+Productrouter.get("/", addLogger, async (req, res, next) => {
     try {
         const products = await Manager.getAllProducts();
 
@@ -18,11 +22,12 @@ Productrouter.get("/", async (req, res, next) => {
             payload: products
         });
     } catch (error) {
+        req.logger.error(`Error al buscar los productos ${error.message}`)
         next(error); // Pasa el error al middleware de manejo de errores
     }
 });
 
-Productrouter.get('/:pid', async (req, res, next) => {
+Productrouter.get('/:pid', addLogger, async (req, res, next) => {
 
     try {
         const result = await Manager.getProductByID(req.params.pid);
@@ -32,11 +37,12 @@ Productrouter.get('/:pid', async (req, res, next) => {
             payload: result
         });
     } catch (error) {
+        req.logger.error(`Error al buscar el producto con ID:${req.params.pid} ${error.message}`)
         next(error); // Pasa el error al middleware de manejo de errores
     }
 });
 
-Productrouter.post('/', passport.authenticate('jwt', { session: false }), authorization("admin"), uploader.array('thumbnail', 3), async (req, res, next) => {
+Productrouter.post('/', addLogger, passport.authenticate('jwt', { session: false }), authorization("admin"), uploader.array('thumbnail', 3), async (req, res, next) => {
     try {
         if (req.files) {
             req.body.thumbnail = [];
@@ -51,12 +57,13 @@ Productrouter.post('/', passport.authenticate('jwt', { session: false }), author
             payload: result
         });
     } catch (error) {
+        req.logger.error(`Error al crear el producto ${error.message}`)
         next(error); // Pasa el error al middleware de manejo de errores
 
     }
 });
 
-Productrouter.put("/:pid", uploader.array('thumbnails', 3), async (req, res, next) => {
+Productrouter.put("/:pid", addLogger, uploader.array('thumbnails', 3), async (req, res, next) => {
     if (req.files) {
         req.body.thumbnail = [];
         req.files.forEach((file) => {
@@ -73,16 +80,18 @@ Productrouter.put("/:pid", uploader.array('thumbnails', 3), async (req, res, nex
         });
 
     } catch (error) {
+        req.logger.error(`Error al modificar el producto con ID: ${req.params.pid} ${error.message}`)
         next(error); // Pasa el error al middleware de manejo de errores
     }
 });
 
-Productrouter.delete("/:pid", async (req, res, next) => {
+Productrouter.delete("/:pid", addLogger, async (req, res, next) => {
     try {
         const pid = req.params.pid;
 
         res.send(await Manager.deleteProduct(pid));
     } catch (error) {
+        req.logger.error(`Error al eliminar el productos con ID:${req.params.pid}${error.message}`)
         next(error); // Pasa el error al middleware de manejo de errores
     }
 });

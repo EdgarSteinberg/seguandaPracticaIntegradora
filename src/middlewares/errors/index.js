@@ -1,4 +1,4 @@
-import { ErrorCodes } from "../../services/errors/enums.js";
+import { ErrorCodes } from "../../services/errors/errorCodes.js";
 
 //error => contiene la Excepcion Custom lanzada
 export default (error, req, res, next) => {
@@ -11,7 +11,7 @@ export default (error, req, res, next) => {
                 error: error.name
             })
             break;
-        case ErrorCodes.INVALID_PARAM: // Gestiona el error INVALID_PARAM
+        case ErrorCodes.INVALID_PARAM: 
             res.status(400).send({
                 status: 'error',
                 error: error.name,
