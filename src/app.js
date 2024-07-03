@@ -21,6 +21,7 @@ import errorHandler from './middlewares/errors/index.js';
 import addLogger from "./logger.js";
 import loggerTestRouter from "./router/loggerRouter.js"
 
+
 dotenv.config(); 
 
 const app = express();
@@ -53,6 +54,9 @@ app.use("/api/chat", messageRouter);
 app.use('/api/sessions', userRouter);
 app.use('/api/ticket', ticketRouter);
 app.use('/api/faker', fakerRouter);
+app.use('/api/realTimeProducts', productRouter)
+
+
 // Ruta para testear los logs
 app.use('/api', loggerTestRouter);
 //Errors 
@@ -64,8 +68,10 @@ app.use(addLogger);
 app.use("/", viewsRouter);
 app.use("/chat", messageRouter)
 app.use("/products", productRouter);
-app.use("/carts/:cid", cartRouter)
+app.use("/carts/:cid", cartRouter);
 app.use('/mockingproducts', fakerRouter);
+app.use('/reset-password', userRouter)
+app.use('/realTimeProducts', productRouter)
 
 //Websocket
 const PORT = 8080;

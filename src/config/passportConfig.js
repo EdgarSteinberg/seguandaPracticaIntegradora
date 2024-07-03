@@ -2,6 +2,7 @@ import passport from 'passport';
 import jwt, { ExtractJwt } from 'passport-jwt';
 import dotenv from 'dotenv';
 
+
 const JWTStratergy = jwt.Strategy;
 
 dotenv.config();

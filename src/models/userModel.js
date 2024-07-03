@@ -45,10 +45,16 @@ const userSchema = mongoose.Schema({
         ],
         default: []
     },
+    // role: {
+    //     type: String,
+    //     require: true,
+    //     default: "user" // Por defecto, todos los usuarios serán "usuario"
+    // }
     role: {
         type: String,
         require: true,
-        default: "user" // Por defecto, todos los usuarios serán "usuario"
+        enum: ['user', 'admin', 'premium'], // Define los roles posibles
+        default: "user" // Por defecto, todos los usuarios serán "user"
     }
 })
 

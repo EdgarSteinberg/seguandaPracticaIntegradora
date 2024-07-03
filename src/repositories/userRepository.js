@@ -26,4 +26,8 @@ export default class UserRepository {
     async updateUser(uid, updateData) {
         return await this.dao.updateUser(uid, updateData);
     }
+
+    async getEmail(email){
+        return await this.dao.getEmail(email)
+    }
 }

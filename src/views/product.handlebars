@@ -10,6 +10,7 @@
         <p>Code: {{this.code}}</p>
         <p>Category: {{this.category}}</p>
         <img src="/img/{{this.thumbnail}}" alt="{{this.description}}">
+        <input type="hidden" class="product-owner" value="{{this.owner}}">
         <br>
         <button class="success agregar" type="submit" data-productid="{{this._id}}" >Agregar al carrito</button>
     </div>

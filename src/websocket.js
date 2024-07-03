@@ -10,11 +10,11 @@ const userManager = new userController();
 export default (io) => {
     io.on("connection", (socket) => {
         //console.log("Nuevo cliente conectado ------>", socket.id);
-3
+
 
         socket.on("nuevoProducto", async data => {
             console.log("Recibido nuevo producto: ", data);
-
+            //const user = await UserManager.getById(user)
             const newProduct = await Manager.createProduct(data);
             // Agregar el ID generado al objeto de datos antes de emitir el evento
             const dataWithID = { id: newProduct.id, ...data };
@@ -24,20 +24,41 @@ export default (io) => {
             socket.emit("productoAgregado", dataWithID);
         });
 
-        // Escuchar evento para eliminar un producto
-        socket.on("eliminarProducto", async productId => {
+        //Escuchar evento para eliminar un producto
+        // socket.on("eliminarProducto", async data => {
+        //     const { productId, userRole, currentUserEmail, currentUserRole } = data;
+        //     try {
+        //         console.log(`Recibida solicitud para eliminar el producto del servidor con ID: ${productId} del usuario con email: ${userEmail}, ${currentUserEmail}`);
+
+        //         await Manager.deleteProduct(productId, userRole, currentUserEmail);
+
+        //         socket.emit("productoEliminado", productId, userRole, currentUserEmail, currentUserRole);
+        //     } catch (error) {
+        //         console.error("Error al eliminar el producto:", error.message);
+        //         // Aquí puedes decidir cómo manejar el error, por ejemplo, enviar un mensaje de error al cliente
+        //         socket.emit("errorEliminarProducto", error.message);
+        //     }
+        // });
+
+        socket.on("eliminarProducto", async data => {
+            const { productId, currentUserEmail, currentUserRole, productOwnerEmail } = data;
             try {
-                console.log("Recibida solicitud para eliminar el producto del servidor con ID:", productId);
-
-                await Manager.deleteProduct(productId);
-
-                socket.emit("productoEliminado", productId);
+                console.log(`Recibida solicitud para eliminar el producto del servidor con ID: ${productId} del usuario con email: ${currentUserEmail}`);
+        
+                // Verificar permisos
+                if (currentUserRole === 'admin' || (currentUserRole === 'premium' && currentUserEmail === productOwnerEmail)) {
+                    await Manager.deleteProduct(productId);
+                    socket.emit("productoEliminado", productId);
+                } else {
+                    console.log('No tienes permisos para eliminar este producto.');
+                    socket.emit("errorEliminarProducto", "No tienes permisos para eliminar este producto.");
+                }
             } catch (error) {
                 console.error("Error al eliminar el producto:", error.message);
-                // Aquí puedes decidir cómo manejar el error, por ejemplo, enviar un mensaje de error al cliente
                 socket.emit("errorEliminarProducto", error.message);
             }
         });
+        
 
 
         //socket chat
@@ -48,16 +69,16 @@ export default (io) => {
             io.emit("nuevoMensaje", data);
         });
 
-        
+
         socket.on('agregarProductoAlCarrito', async ({ productId }) => {
             console.log('ID del producto recibido:', productId);
             try {
                 // Crear un nuevo carrito
                 const cart = await CartManager.createCart();
-        
+
                 // Obtener el ID del carrito creado
                 const cid = cart._id;
-        
+
                 // Agregar el producto al carrito utilizando el ID del carrito y el ID del producto
                 const updatedCart = await CartManager.addProductByID(cid, productId);
                 console.log('Producto agregado al carrito:', updatedCart);
@@ -68,6 +89,7 @@ export default (io) => {
                 // Enviar un mensaje de error al cliente si es necesario
             }
         });
-
+        
+        
     });
 }

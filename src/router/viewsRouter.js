@@ -69,24 +69,30 @@ router.get("/products/:pid", passport.authenticate('jwt', { session: false }), a
 });
 
 //Ruta Realtimeproduct
-router.get("/realTimeProducts", authenticate, authorization("admin"), async (req, res) => {
+router.get("/realTimeProducts", passport.authenticate('jwt', { session: false }), authenticate, authorization(["admin", "premium"]), async (req, res) => {
     const queryParams = {
         page: req.query.page,
         limit: req.query.limit,
         sort: req.query.sort,
         category: req.query.category,
-        query: req.query.query
+        query: req.query.query,
+        user: req.user,
+        //premium: req.user.premium 
     };
-
+    
     try {
         let allProduct = await Manager.getAllProducts(queryParams);
-
+        console.log('User info in realTimeProducts route:', req.user); // Agrega este console.log para verificar el req.user
         res.render(
-            "realTimeProduct",
+            "realTimeProducts",
             {
                 title: "Coder Ecommerce",
                 products: allProduct.payload, // Accede al array de productos en el payload
-                style: "index.css"
+                style: "index.css",
+                user: req.user, 
+                premium: req.user.role === 'premium',
+                admin: req.user.role === 'admin'
+                //premium: req.user.role === "premium" : "admin" // Pasa el rol del usuario específicamente
             });
     } catch (error) {
         // Manejo de errores
@@ -185,4 +191,34 @@ router.get("/mockingproducts", authenticate, authorization("admin"), async (req,
         });
 });
 
+router.get("/recover-password", async (req, res) => {
+    res.render(
+        'recover-password',
+        {
+            title: 'Recuperación de Contraseña',
+            style: 'index.css'
+        }
+    )
+});
+
+router.get("/check-email", async (req, res) => {
+    res.render(
+        'checkEmail',
+        {
+            title: 'Correo Enviado',
+            style: 'index.css'
+        }
+    )
+});
+ 
+// router.get('/reset-password', async (req,res) => {
+//     res.render(
+//         'reset-password',
+//         {
+//             title: 'Nueva Contraseña',
+//             // style: 'index.css',
+//             // token: 'token'
+//         }
+//     )
+// });
 export default router;

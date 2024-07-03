@@ -1,5 +1,4 @@
 <h1>Agregar Nuevo Producto</h1>
-
 <form id="formulario" class="form">
     <label for="title">Título:</label><br>
     <input type="text" name="title" id="title" required><br>
@@ -13,15 +12,20 @@
     <label for="code">Código:</label><br>
     <input type="text" name="code" id="code" required><br>
 
-
     <label for="stock">Stock:</label><br>
     <input type="text" name="stock" id="stock" required><br>
 
     <label for="category">Categoria:</label><br>
-    <input name="category" id="category" type="text">
-    <br>
+    <input name="category" id="category" type="text"><br>
+
+    
+    {{#if premium}}
+    <input type="hidden" name="owner" id="owner" value="{{user.email}}">
+    {{/if}}
+
     <input type="submit" value="Agregar Producto" class="btn">
 </form>
+
 <hr>
 
 <h1>Listado de Productos en Tiempo Real</h1>
@@ -37,9 +41,15 @@
         <p>Código: {{this.code}}</p>
         <p>category: {{this.category}}</p>
         <img src="{{this.thumbnail}}" alt="{{this.description}}">
+          <!-- Input oculto para el correo electrónico del usuario -->
+        <input type="hidden" name="userEmail" id="user-email" value="{{this.owner}}">
+
         <br>
-        <button class="delete" type="submit" data-productid="{{this._id}}" >Eliminar</button>
+        <button class="delete" type="submit" data-productid="{{this._id}}" >Eliminar</button> 
+        
 
     </div>
     {{/each}}
+        <input type="hidden" class="currentUserEmail" value="{{user.email}}"> <!-- Correo del usuario autenticado -->
+        <input type="hidden" id="currentUserRole" value="{{user.role}}">
 </div>

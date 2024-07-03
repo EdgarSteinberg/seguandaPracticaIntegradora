@@ -8,6 +8,7 @@ import { uploader } from '../utils/multerUtil.js'
 import { authenticate } from '../middlewares/auth.js'
 import addLogger from '../logger.js';
 
+
 const Productrouter = Router();
 
 const Manager = new ProductController();
@@ -16,10 +17,10 @@ const Manager = new ProductController();
 Productrouter.get("/", addLogger, async (req, res, next) => {
     try {
         const products = await Manager.getAllProducts();
-
+        const user = req.user
         res.send({
             status: 'success',
-            payload: products
+            payload: products, user
         });
     } catch (error) {
         req.logger.error(`Error al buscar los productos ${error.message}`)
@@ -42,13 +43,23 @@ Productrouter.get('/:pid', addLogger, async (req, res, next) => {
     }
 });
 
-Productrouter.post('/', addLogger, passport.authenticate('jwt', { session: false }), authorization("admin"), uploader.array('thumbnail', 3), async (req, res, next) => {
+Productrouter.post('/', addLogger, passport.authenticate('jwt', { session: false }), authorization(["admin", "premium"]), uploader.array('thumbnail', 3), async (req, res, next) => {
     try {
+
         if (req.files) {
             req.body.thumbnail = [];
             req.files.forEach((file) => {
                 req.body.thumbnail.push(file.filename);
             });
+        }
+
+        const userEmail = req.user.email;
+        const userRole = req.user.role;
+
+        if (userRole === 'premium') {
+            req.body.owner = userEmail;
+        } else {
+            req.body.owner = 'admin';
         }
 
         const result = await Manager.createProduct(req.body);
@@ -85,11 +96,29 @@ Productrouter.put("/:pid", addLogger, uploader.array('thumbnails', 3), async (re
     }
 });
 
-Productrouter.delete("/:pid", addLogger, async (req, res, next) => {
+Productrouter.delete("/:pid", addLogger,passport.authenticate('jwt', { session: false }), authorization(["admin", "premium"]), async (req, res, next) => {
     try {
         const pid = req.params.pid;
+        const userEmail = req.user.email;
+        const userRole = req.user.role;
 
-        res.send(await Manager.deleteProduct(pid));
+        // Verificar permisos antes de eliminar el producto
+        const product = await Manager.getProductByID(pid);
+
+        if (userRole === 'admin' || (userRole === 'premium' && product.owner === userEmail)) {
+            const result = await Manager.deleteProduct(pid);
+            res.send({
+                status: 'success',
+                payload: result
+            });
+        }
+        else {
+            req.logger.warning(`User ${userEmail} does not have permission to delete product with ID: ${pid}`);
+            res.status(403).send({
+                status: 'error',
+                message: 'No tienes permisos para eliminar este producto'
+            });
+        }
     } catch (error) {
         req.logger.error(`Error al eliminar el productos con ID:${req.params.pid}${error.message}`)
         next(error); // Pasa el error al middleware de manejo de errores

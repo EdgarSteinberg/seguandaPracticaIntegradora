@@ -1,13 +1,17 @@
 import { Router } from 'express';
 import { CartController } from '../controllers/cartController.js';
 import addLogger from '../logger.js';
+import passport from 'passport';
+import { ProductController } from '../controllers/productController.js';
+
+const Manager = new ProductController;
 
 const CartRouter = Router();
 
 const carts = new CartController()
 
 
-CartRouter.get('/',addLogger, async (req, res, next) => {
+CartRouter.get('/', addLogger, async (req, res, next) => {
     try {
         const result = await carts.getAllCarts();
         res.send({
@@ -34,7 +38,7 @@ CartRouter.get('/:cid', addLogger, async (req, res, next) => {
 });
 
 
-CartRouter.post("/",addLogger, async (req, res, next) => {
+CartRouter.post("/", addLogger, async (req, res, next) => {
 
     try {
         const { userId } = req.body
@@ -50,10 +54,27 @@ CartRouter.post("/",addLogger, async (req, res, next) => {
 });
 
 
-CartRouter.post("/:cid/products/:pid", addLogger, async (req, res, next) => {
+CartRouter.post("/:cid/products/:pid", addLogger, passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    const { cid, pid } = req.params;
+    const userEmail = req.user.email;
+    const userRole = req.user.role;
 
+    // Debug logs
+    req.logger.debug(`Request to add product with ID: ${pid} to cart with ID: ${cid} by user: ${userEmail} with role: ${userRole}`);
+
+    // Verificar el propietario del producto antes de agregarlo al carrito
+    const product = await Manager.getProductByID(pid);
+
+    if (userRole === 'premium' && product.owner === userEmail) {
+        req.logger.warning(`User ${userEmail} cannot add their own product to the cart.`);
+        return res.status(403).send({
+            status: 'error',
+            message: 'No puedes agregar tu propio producto al carrito'
+        });
+    }
     try {
-        const result = await carts.addProductByID(req.params.cid, req.params.pid);
+        // const result = await carts.addProductByID(req.params.cid, req.params.pid);
+        const result = await carts.addProductByID(cid, pid);
         res.send({
             status: 'success',
             payload: result
@@ -65,7 +86,7 @@ CartRouter.post("/:cid/products/:pid", addLogger, async (req, res, next) => {
 
 })
 
-CartRouter.delete("/:cid/products/:pid",addLogger, async (req, res, next) => {
+CartRouter.delete("/:cid/products/:pid", addLogger, async (req, res, next) => {
 
     try {
         const result = await carts.deleteProductInCart(req.params.cid, req.params.pid);
@@ -80,7 +101,7 @@ CartRouter.delete("/:cid/products/:pid",addLogger, async (req, res, next) => {
 
 })
 
-CartRouter.put("/:cid", addLogger,async (req, res, next) => {
+CartRouter.put("/:cid", addLogger, async (req, res, next) => {
     try {
         const cid = req.params.cid;
         const result = await carts.updateCart(cid, req.body);
@@ -95,7 +116,7 @@ CartRouter.put("/:cid", addLogger,async (req, res, next) => {
     }
 });
 
-CartRouter.put("/:cid/products/:pid",addLogger, async (req, res, next) => {
+CartRouter.put("/:cid/products/:pid", addLogger, async (req, res, next) => {
 
     try {
         const result = await carts.updateProductQuantityInCart(req.params.cid, req.params.pid, req.body.quantity);
@@ -125,7 +146,7 @@ CartRouter.delete("/:cid", addLogger, async (req, res, next) => {
 
 })
 
-CartRouter.post('/:cid/purchase',addLogger, async (req, res, next) => {
+CartRouter.post('/:cid/purchase', addLogger, async (req, res, next) => {
     try {
         const { cid } = req.params
         const { purchaser } = req.body

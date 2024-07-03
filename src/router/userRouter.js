@@ -5,6 +5,8 @@ import CurrentDTO from '../dao/dto/currentDTO.js';
 import { userController } from '../controllers/userController.js';
 import {publicRoute,authenticate} from '../middlewares/auth.js'
 import addLogger from '../logger.js'
+import jwt from 'jsonwebtoken';
+import { authorization } from '../middlewares/authorization.js';
 
 const UserRouter = Router();
 
@@ -88,6 +90,68 @@ UserRouter.get("/githubcallback", passport.authenticate('github', { failureRedir
     res.redirect('/'); // Redirige al usuario a la página principal
 
 
+});
+UserRouter.post('/recover-password', async (req, res) => {
+    const { email } = req.body;
+    try {
+        await Users.requestPasswordReset(email);
+        res.redirect('/check-email');
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send({ status: 'error', message: 'Error en el envío del correo' });
+    }
+});
+
+
+UserRouter.get('/', async (req, res) => {
+    const {token} = req.query
+    console.log('Token recibido:', token);
+    if (!token) {
+        return res.status(400).send({ status: 'error', message: 'Token no proporcionado' });
+    }
+    res.render('reset-password', { token, style: 'index.css' });
+});
+
+UserRouter.post('/reset-password', async (req, res) => {
+    const { token, newPassword } = req.body;
+    console.log('Token recibido en el formulario:', token)
+    if (!token) {
+        return res.status(400).send({ status: 'error', message: 'Token no proporcionado' });
+    }
+    try {
+        await Users.resetPassword(token, newPassword);
+        res.redirect('/login');
+    } catch (error) {
+        console.error(error.message);
+        if (error instanceof jwt.TokenExpiredError) {
+            return res.status(400).send({ status: 'error', message: 'El enlace ha expirado. Por favor, solicita un nuevo enlace de restablecimiento de contraseña.' });
+        } else {
+            return res.status(500).send({ status: 'error', message: error.message });
+        }
+    }
+});
+UserRouter.put('/premium/:uid', passport.authenticate('jwt', { session: false }), authorization(["admin"]), async (req,res) => {
+    try {
+        const { uid } = req.params;
+        const { role } = req.body;
+
+        // Verificar si el rol enviado es válido
+        if (role !== 'user' && role !== 'premium') {
+            return res.status(400).json({ error: 'El rol especificado no es válido' });
+        }
+
+        // Cambiar el rol del usuario
+        const updatedUser = await Users.updateUser(uid,{ role });
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        res.status(200).json({ message: `Rol del usuario ${uid} actualizado a ${role}` });
+    } catch (error) {
+        console.error('Error al actualizar el rol del usuario:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    } 
 });
 
 

@@ -54,6 +54,17 @@ class UserService {
             throw new Error('Error al actualizar el usuario');
         }
     }
+
+
+    async getEmail(email) {
+        try{
+            const result = await userModel.findOne({email}).lean()
+            return result;
+        }catch(error){
+            console.error(error.message);
+            throw new Error('El email no existe')
+        }
+    }
 }
 
 
