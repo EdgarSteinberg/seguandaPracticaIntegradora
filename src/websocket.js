@@ -24,40 +24,38 @@ export default (io) => {
             socket.emit("productoAgregado", dataWithID);
         });
 
-        //Escuchar evento para eliminar un producto
-        // socket.on("eliminarProducto", async data => {
-        //     const { productId, userRole, currentUserEmail, currentUserRole } = data;
-        //     try {
-        //         console.log(`Recibida solicitud para eliminar el producto del servidor con ID: ${productId} del usuario con email: ${userEmail}, ${currentUserEmail}`);
-
-        //         await Manager.deleteProduct(productId, userRole, currentUserEmail);
-
-        //         socket.emit("productoEliminado", productId, userRole, currentUserEmail, currentUserRole);
-        //     } catch (error) {
-        //         console.error("Error al eliminar el producto:", error.message);
-        //         // Aquí puedes decidir cómo manejar el error, por ejemplo, enviar un mensaje de error al cliente
-        //         socket.emit("errorEliminarProducto", error.message);
-        //     }
-        // });
-
-        socket.on("eliminarProducto", async data => {
-            const { productId, currentUserEmail, currentUserRole, productOwnerEmail } = data;
+        socket.on("eliminarProducto", async productId => {
             try {
-                console.log(`Recibida solicitud para eliminar el producto del servidor con ID: ${productId} del usuario con email: ${currentUserEmail}`);
-        
-                // Verificar permisos
-                if (currentUserRole === 'admin' || (currentUserRole === 'premium' && currentUserEmail === productOwnerEmail)) {
-                    await Manager.deleteProduct(productId);
-                    socket.emit("productoEliminado", productId);
-                } else {
-                    console.log('No tienes permisos para eliminar este producto.');
-                    socket.emit("errorEliminarProducto", "No tienes permisos para eliminar este producto.");
-                }
+                console.log("Recibida solicitud para eliminar el producto del servidor con ID:", productId);
+
+                await Manager.deleteProduct(productId);
+
+                socket.emit("productoEliminado", productId);
             } catch (error) {
                 console.error("Error al eliminar el producto:", error.message);
+                // Aquí puedes decidir cómo manejar el error, por ejemplo, enviar un mensaje de error al cliente
                 socket.emit("errorEliminarProducto", error.message);
             }
         });
+
+        // socket.on("eliminarProducto", async data => {
+        //     const { productId, currentUserEmail, currentUserRole, productOwnerEmail } = data;
+        //     try {
+        //         console.log(`Recibida solicitud para eliminar el producto del servidor con ID: ${productId} del usuario con email: ${currentUserEmail}`);
+        
+        //         // Verificar permisos
+        //         if (currentUserRole === 'admin' || (currentUserRole === 'premium' && currentUserEmail === productOwnerEmail)) {
+        //             await Manager.deleteProduct(productId);
+        //             socket.emit("productoEliminado", productId);
+        //         } else {
+        //             console.log('No tienes permisos para eliminar este producto.');
+        //             socket.emit("errorEliminarProducto", "No tienes permisos para eliminar este producto.");
+        //         }
+        //     } catch (error) {
+        //         console.error("Error al eliminar el producto:", error.message);
+        //         socket.emit("errorEliminarProducto", error.message);
+        //     }
+        // });
         
 
 

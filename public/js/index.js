@@ -14,8 +14,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const stock = document.getElementById('stock').value;
             const category = document.getElementById('category').value;
             //const owner = document.getElementById('owner').value;
-            const ownerInput = document.getElementById('owner');
-            const owner = ownerInput ? ownerInput.value : 'admin'; // Set owner to 'admin' if not present
+           // const ownerInput = document.getElementById('owner');
+           // const owner = ownerInput ? ownerInput.value : 'admin'; // Set owner to 'admin' if not present
 
 
             const nuevoProducto = {
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 code: code,
                 stock: stock,
                 category: category,
-                owner: owner
+                //owner: owner
             };
 
 
@@ -55,33 +55,49 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-   
     const listaProductos = document.getElementById('listaProductos');
-    const currentUserEmail = document.querySelector('.currentUserEmail').value;
-    const currentUserRole = document.getElementById('currentUserRole').value;
-   // const productOwnerEmail = document.querySelector('.user-email').value
     if (listaProductos) {
         listaProductos.addEventListener('click', function (event) {
             const deleteButton = event.target.closest('.delete');
-            
             if (deleteButton) {
                 const productId = deleteButton.getAttribute('data-productid');
-                const productOwnerEmail = deleteButton.closest('.products').querySelector('.user-email').value;
-                
-                console.log('Correo electrónico del usuario autenticado:', currentUserEmail, "role", currentUserRole);
-                console.log('Correo electrónico del propietario del producto:', productOwnerEmail);
-
                 const productElement = deleteButton.closest('.products');
                 if (productElement) {
                     productElement.remove();
-                    console.log('Producto eliminado del DOM:', productId, "con email", currentUserRole);
+                    console.log('Producto eliminado del DOM:', productId);
                 } else {
                     console.error('El producto con ID', productId, 'no se encontró en el DOM.');
                 }
-                socket.emit('eliminarProducto', { productId, currentUserEmail, currentUserRole, productOwnerEmail });
+                socket.emit('eliminarProducto', productId);
             }
         });
     }
+//     const listaProductos = document.getElementById('listaProductos');
+//     const currentUserEmail = document.querySelector('.currentUserEmail').value;
+//     const currentUserRole = document.getElementById('currentUserRole').value;
+//    // const productOwnerEmail = document.querySelector('.user-email').value
+//     if (listaProductos) {
+//         listaProductos.addEventListener('click', function (event) {
+//             const deleteButton = event.target.closest('.delete');
+            
+//             if (deleteButton) {
+//                 const productId = deleteButton.getAttribute('data-productid');
+//                // const productOwnerEmail = deleteButton.closest('.products').querySelector('.user-email').value;
+                
+//                 console.log('Correo electrónico del usuario autenticado:', currentUserEmail, "role", currentUserRole);
+//                 console.log('Correo electrónico del propietario del producto:', productOwnerEmail);
+
+//                 const productElement = deleteButton.closest('.products');
+//                 if (productElement) {
+//                     productElement.remove();
+//                     console.log('Producto eliminado del DOM:', productId, "con email", currentUserRole);
+//                 } else {
+//                     console.error('El producto con ID', productId, 'no se encontró en el DOM.');
+//                 }
+//                 socket.emit('eliminarProducto', { productId, currentUserEmail, currentUserRole, productOwnerEmail });
+//             }
+//         });
+//     }
 
 });
 
