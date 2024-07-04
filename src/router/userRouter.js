@@ -75,22 +75,16 @@ UserRouter.post("/logout", (req, res) => {
 });
 
 
-UserRouter.get("/github",authenticate, passport.authenticate('github', { scope: ['user.email'] }), async (req, res) => {
-    // console.log(req.user);
+// UserRouter.get("/github", passport.authenticate('github', { scope: ['user.email'] }))
 
-    res.cookie('auth', req.user.token, { maxAge: 60 * 60 * 1000 }).send({
-        status: 'success',
-        message: 'success'
-    });
-});
+// UserRouter.get("/githubcallback", passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
+  
+//     const token = req.user.token;
+//     res.cookie('auth', token, { maxAge: 60 * 60 * 1000, httpOnly: true });
+//     res.redirect('/');
 
-UserRouter.get("/githubcallback", passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
-    req.user.token = req.token
+// });
 
-    res.redirect('/'); // Redirige al usuario a la página principal
-
-
-});
 UserRouter.post('/recover-password', async (req, res) => {
     const { email } = req.body;
     try {
@@ -137,20 +131,20 @@ UserRouter.put('/premium/:uid', passport.authenticate('jwt', { session: false })
 
         // Verificar si el rol enviado es válido
         if (role !== 'user' && role !== 'premium') {
-            return res.status(400).json({ error: 'El rol especificado no es válido' });
+            return res.status(400).send({ error: 'El rol especificado no es válido' });
         }
 
         // Cambiar el rol del usuario
         const updatedUser = await Users.updateUser(uid,{ role });
 
         if (!updatedUser) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
+            return res.status(404).send({ error: 'Usuario no encontrado' });
         }
 
-        res.status(200).json({ message: `Rol del usuario ${uid} actualizado a ${role}` });
+        res.status(200).send({ message: `Rol del usuario ${uid} actualizado a ${role}` });
     } catch (error) {
         console.error('Error al actualizar el rol del usuario:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        res.status(500).send({ error: 'Error interno del servidor' });
     } 
 });
 

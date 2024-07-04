@@ -20,7 +20,7 @@ import fakerRouter from './router/fakerRouter.js'
 import errorHandler from './middlewares/errors/index.js';
 import addLogger from "./logger.js";
 import loggerTestRouter from "./router/loggerRouter.js"
-
+import gitHub from './router/gitHub.js'
 
 dotenv.config(); 
 
@@ -55,7 +55,7 @@ app.use('/api/sessions', userRouter);
 app.use('/api/ticket', ticketRouter);
 app.use('/api/faker', fakerRouter);
 app.use('/api/realTimeProducts', productRouter)
-
+app.use('/api/gitHub', gitHub)
 
 // Ruta para testear los logs
 app.use('/api', loggerTestRouter);

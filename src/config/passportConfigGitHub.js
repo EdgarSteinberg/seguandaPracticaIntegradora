@@ -17,38 +17,45 @@ const initializeGitHubPassport = () => {
             {
                 clientID: CLIENT_ID,
                 clientSecret: SECRET_ID,
-                callbackURL: 'http://localhost:8080/api/sessions/githubcallback'
+                callbackURL: 'http://localhost:8080/api/gitHub/githubcallback'
             },
             async (accessToken, refreshToken, profile, done) => {
                 try {
                     console.log(profile);
                     const email = profile._json.email || `${profile._json.login}@github.com`;
-    
+
                     let user = await userModel.findOne({ $or: [{ email }, { username: profile.username }] }).lean();
-    
+
                     if (!user) {
-                        user = await userModel.create({
-                            first_name: profile._json.name || profile.username,
-                            last_name: '',
-                            email,
-                            age: 18,
-                            password: '',
-                            username: profile.username,
-                        });
+                        let newUser = {
+                            username: profile._json.login,
+                            name: profile._json.name,
+                            email: email,
+                            password: ""
+                        };
+                        const result = await userModel.create(newUser);
+                        console.log('Nuevo usuario creado:', result);
+
+                        const token = jwt.sign({ _id: result._id, email: result.email, username: result.username }, SECRET_KEY, { expiresIn: '1h' });
+                        console.log('Token generado:', token);
+
+                        done(null, { user: result, token });
+                    } else {
+                        const token = jwt.sign({ _id: user._id, email: user.email, username: user.username }, SECRET_KEY, { expiresIn: '1h' });
+                        console.log('Token generado para usuario existente:', token);
+                        done(null, { user, token });
                     }
-    
-                    const token = jwt.sign(user, SECRET_KEY, { expiresIn: '1h' });
-                    done(null, { ...user, token });
                 } catch (error) {
+                    console.error('Error en estrategia de GitHub:', error);
                     done(error);
                 }
             }
         )
     );
-    
 
+   
     passport.serializeUser((user, done) => {
-        done(null, user._id);
+        done(null, user.user ? user.user._id : user._id);
     });
 
     passport.deserializeUser(async (id, done) => {
@@ -56,5 +63,4 @@ const initializeGitHubPassport = () => {
         done(null, user);
     });
 };
-
 export default initializeGitHubPassport;

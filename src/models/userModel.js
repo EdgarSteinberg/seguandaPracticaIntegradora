@@ -18,7 +18,8 @@ const userSchema = mongoose.Schema({
         type: String,
         minLength: 5,
         require: true,
-        unique: true
+        unique: true,
+        trim: true // Elimina espacios en blanco alrededor del valor
     },
     age: {
         type: Number,
@@ -27,12 +28,13 @@ const userSchema = mongoose.Schema({
     },
     password: {
         type: String,
-        minLength: 3,
+       
         require: true
     },
     username: {
         type: String,
-        unique: true
+        unique: true,
+        trim: true // Elimina espacios en blanco alrededor del valor
     },
     cart: {
         type: [
