@@ -16,6 +16,8 @@ ul {
 
 p {
     margin: 5px;
+    /* max-width: 300px; */
+    flex: 1; /* Permite que los párrafos ocupen el espacio disponible */
 }
 
 hr {
@@ -25,7 +27,7 @@ hr {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    flex-wrap: wrap;
+   flex-wrap: wrap;
     width: 100%;
 }
 
@@ -38,7 +40,7 @@ hr {
     border-radius: 5px;
     padding: 20px;
     margin: 10px;
-    
+    flex-wrap: wrap;
     text-align: center;
 }
 
@@ -52,6 +54,7 @@ hr {
     background-color: red;
     padding: 10px;
     color: white;
+    width: 300px;
 }
 .success {
     background-color: #1eb825;
@@ -176,4 +179,40 @@ hr {
 .logout:hover {
     background-color: #0097a7;
     color: white;
+}
+
+.box-register{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: dimgrey;
+}
+
+
+
+.containerFaker {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start; /* Alinea las tarjetas al principio verticalmente */
+}
+.productsFaker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* Distribuye el espacio entre los elementos */
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+    flex-wrap: wrap;
+    text-align: center;
+    max-width: 400px;
+    min-height: 300px; /* Ajusta la altura mínima según tus necesidades */
+    flex-grow: 1; /* Permite que las tarjetas crezcan uniformemente */
+}
+
+.imgFaker{
+    width: 250px;
 }
