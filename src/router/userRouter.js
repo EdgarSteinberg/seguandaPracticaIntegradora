@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import passport from 'passport';
+import jwt from 'jsonwebtoken';
 
-import CurrentDTO from '../dao/dto/currentDTO.js';
 import { userController } from '../controllers/userController.js';
+import CurrentDTO from '../dao/dto/currentDTO.js';
+
 import {publicRoute,authenticate} from '../middlewares/auth.js'
 import addLogger from '../logger.js'
-import jwt from 'jsonwebtoken';
 import { authorization } from '../middlewares/authorization.js';
 
 const UserRouter = Router();
@@ -75,16 +76,6 @@ UserRouter.post("/logout", (req, res) => {
 });
 
 
-// UserRouter.get("/github", passport.authenticate('github', { scope: ['user.email'] }))
-
-// UserRouter.get("/githubcallback", passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
-  
-//     const token = req.user.token;
-//     res.cookie('auth', token, { maxAge: 60 * 60 * 1000, httpOnly: true });
-//     res.redirect('/');
-
-// });
-
 UserRouter.post('/recover-password', async (req, res) => {
     const { email } = req.body;
     try {
@@ -124,6 +115,7 @@ UserRouter.post('/reset-password', async (req, res) => {
         }
     }
 });
+
 UserRouter.put('/premium/:uid', passport.authenticate('jwt', { session: false }), authorization(["admin"]), async (req,res) => {
     try {
         const { uid } = req.params;

@@ -32,11 +32,13 @@ hr {
 .products {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     border: 1px solid white;
     border-radius: 5px;
     padding: 20px;
     margin: 10px;
-    width: 20%;
+    
     text-align: center;
 }
 
@@ -58,6 +60,7 @@ hr {
     border-radius: 5px;
     border: 1px solid white;
     transition: background-color 0.3s, color 0.3s; 
+    width: 200px;
 }    
 
 .success:hover {
@@ -71,26 +74,30 @@ hr {
     align-items: center;
 }
 
-input {
-    width: 20%;
-    padding: 4px;
+ input {
+    width: 300px;
+    padding: 7px;
     background-color: white;
     border: 1px solid black;
     border-radius: 5px;
     margin-bottom: 10px;
     color: black;
-}
+} 
 
 .btn {
     color: white;
-    background-color: green;
+    background-color: rgb(0, 196, 0);
     border: 1px solid black;
     border-radius: 5px;
     font-size: 15px;
-    width: 20.5%;
-    padding: 10px;
+    padding: 7px;
+    transition: 1s;
+    margin-top: 7px;
 }
 
+.btn:hover{
+    background-color: rgb(3, 122, 3);
+}
 /* .linea {
     border-bottom: 1px solid rgb(255, 255, 255);
     margin-bottom: 10px;
@@ -121,8 +128,8 @@ input {
     background-color: #00bcd4;
     color: rgb(255, 255, 255);
     margin: 5px;
-    width: 200px;
-    padding: 5px;
+    width: 320px;
+    padding: 7px;
     cursor: pointer;
     border-radius: 5px;
     transition: background-color 0.3s; /* Transición suave */
@@ -134,9 +141,39 @@ input {
 }
 /*login*/
 
+.btnGit{
+    background-color: #00bcd4;
+    color: rgb(255, 255, 255);
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s; /* Transición suave */
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    width: 70%;
+}
+
 .box{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+
+
+.logout {
+    background-color: #00bcd4;
+    padding: 7px;
+    margin-top: 15px;
+    border-radius: 5px;
+    border: 1px solid white;
+    transition: background-color 0.3s, color 0.3s; 
+    width: 200px;
+}    
+
+.logout:hover {
+    background-color: #0097a7;
+    color: white;
 }
