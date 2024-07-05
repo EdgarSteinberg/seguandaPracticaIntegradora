@@ -46,7 +46,7 @@ class userController {
     async register(user) {
         const { first_name, last_name, email, age, password, username, role } = user;
 
-        if (!first_name || !last_name || !email || !age || !password || !username) {
+        if (!first_name || !last_name || !email || !age || !password) {
             CustomError.createError({
                 name: 'InvalidUserInputError',
                 cause: generateUserErrorInfo(user),

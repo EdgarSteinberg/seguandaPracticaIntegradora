@@ -5,7 +5,7 @@ export default class UserDTO {
         this.last_name = last_name;
         this.email = email;
         this.age = age;
-        this.username = username;
+        this.username = username || last_name; // Si no se proporciona un username, usa el last_name como username
         this.password = password
     }
 }
