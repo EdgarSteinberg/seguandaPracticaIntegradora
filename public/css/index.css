@@ -89,7 +89,7 @@ hr {
 
 .btn {
     color: white;
-    background-color: rgb(0, 196, 0);
+    background-color: #28a745;
     border: 1px solid black;
     border-radius: 5px;
     font-size: 15px;
@@ -99,7 +99,7 @@ hr {
 }
 
 .btn:hover{
-    background-color: rgb(3, 122, 3);
+    background-color: #218838;
 }
 /* .linea {
     border-bottom: 1px solid rgb(255, 255, 255);
