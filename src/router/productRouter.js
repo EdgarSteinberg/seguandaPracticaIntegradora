@@ -18,9 +18,13 @@ Productrouter.get("/", addLogger, async (req, res, next) => {
     try {
         const products = await Manager.getAllProducts();
         const user = req.user
+        // res.send({
+        //     status: 'success',
+        //     payload: products, user
+        // });
         res.send({
             status: 'success',
-            payload: products, user
+            payload: { products: products, user: user }
         });
     } catch (error) {
         req.logger.error(`Error al buscar los productos ${error.message}`)
@@ -96,7 +100,7 @@ Productrouter.put("/:pid", addLogger, uploader.array('thumbnails', 3), async (re
     }
 });
 
-Productrouter.delete("/:pid", addLogger,passport.authenticate('jwt', { session: false }), authorization(["admin", "premium"]), async (req, res, next) => {
+Productrouter.delete("/:pid", addLogger, passport.authenticate('jwt', { session: false }), authorization(["admin", "premium"]), async (req, res, next) => {
     try {
         const pid = req.params.pid;
         const userEmail = req.user.email;

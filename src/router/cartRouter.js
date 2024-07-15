@@ -45,7 +45,8 @@ CartRouter.post("/", addLogger, async (req, res, next) => {
         const result = await carts.createCart(userId);
         res.send({
             status: 'success',
-            payload: result
+            // payload: result // verdadero
+            payload: { _id: result._id, ...result } 
         });
     } catch (error) {
         req.logger.error(`Error al crearr el carrito  ${error.message}`)

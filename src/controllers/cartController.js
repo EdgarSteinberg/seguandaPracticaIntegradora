@@ -189,7 +189,7 @@ class CartController {
     //Modifica la cantidad del producto en el carrito
     async updateProductQuantityInCart(cid, pid, quantity) {
         try {
-            logger.error(`Error updating cart with ID ${cid}: ${error.message}`);
+            //logger.error(`Error updating cart with ID ${cid}: ${error.message}`);
             const cart = await CartServiceRepository.updateQuantity(
                 { _id: cid, "products.product": pid },
                 { $set: { "products.$.quantity": quantity } },
