@@ -59,7 +59,7 @@ const swaggerOptions = {
     },
     apis: [`${__dirname}/../docs/**/*.yaml`]
 }
-//console.log("Swagger API path:", `/../${__dirname}/docs/**/*.yaml`)
+
 const specs = swaggerJsdoc(swaggerOptions);
 app.use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
@@ -68,7 +68,7 @@ app.use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 app.use("/api/products", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/chat", messageRouter);
-app.use('/api/sessions', userRouter);
+app.use('/api/users', userRouter);
 app.use('/api/ticket', ticketRouter);
 app.use('/api/faker', fakerRouter);
 app.use('/api/realTimeProducts', productRouter)
@@ -101,11 +101,3 @@ const io = new Server(httpServer);
 
 websocket(io);
 
-
-//conect Mongo
-//MONGODB_URI=mongodb+srv://steinberg2024:cai2024@cluster0.cl7spkj.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0
-//git hub
-//GITHUB_CLIENT_ID=Iv1.3ba31aa9dedaeb4e
-//GITHUB_CLIENT_SECRET=88ad705efc2bf1b26fcfb7ada1ccc9de0942c263
-//cookie key
-//SECRET_KEY=coderSecret

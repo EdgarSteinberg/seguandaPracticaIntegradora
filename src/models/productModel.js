@@ -42,11 +42,6 @@ const productSchema = mongoose.Schema({
         type: String,
         default: "admin"
     }
-    // owner: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "users",
-    //     default: "admin"  // valor por defecto
-    // }
 });
 
 productSchema.plugin(mongoosePaginate);

@@ -38,26 +38,6 @@ export default (io) => {
             }
         });
 
-        // socket.on("eliminarProducto", async data => {
-        //     const { productId, currentUserEmail, currentUserRole, productOwnerEmail } = data;
-        //     try {
-        //         console.log(`Recibida solicitud para eliminar el producto del servidor con ID: ${productId} del usuario con email: ${currentUserEmail}`);
-        
-        //         // Verificar permisos
-        //         if (currentUserRole === 'admin' || (currentUserRole === 'premium' && currentUserEmail === productOwnerEmail)) {
-        //             await Manager.deleteProduct(productId);
-        //             socket.emit("productoEliminado", productId);
-        //         } else {
-        //             console.log('No tienes permisos para eliminar este producto.');
-        //             socket.emit("errorEliminarProducto", "No tienes permisos para eliminar este producto.");
-        //         }
-        //     } catch (error) {
-        //         console.error("Error al eliminar el producto:", error.message);
-        //         socket.emit("errorEliminarProducto", error.message);
-        //     }
-        // });
-        
-
 
         //socket chat
         socket.on("nuevoMensaje", async data => {
@@ -87,7 +67,7 @@ export default (io) => {
                 // Enviar un mensaje de error al cliente si es necesario
             }
         });
-        
-        
+
+
     });
 }

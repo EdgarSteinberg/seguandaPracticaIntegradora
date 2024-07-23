@@ -7,10 +7,6 @@ const messageSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    // correoDelUsuario: {
-    //     type: String,
-    //     required: true
-    // },
     message: {
         type: String,
         required: true

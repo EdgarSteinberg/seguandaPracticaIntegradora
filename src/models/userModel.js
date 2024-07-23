@@ -28,7 +28,7 @@ const userSchema = mongoose.Schema({
     },
     password: {
         type: String,
-       
+
         require: true
     },
     username: {
@@ -47,20 +47,33 @@ const userSchema = mongoose.Schema({
         ],
         default: []
     },
-    // role: {
-    //     type: String,
-    //     require: true,
-    //     default: "user" // Por defecto, todos los usuarios serán "usuario"
-    // }
     role: {
         type: String,
         require: true,
         enum: ['user', 'admin', 'premium'], // Define los roles posibles
         default: "user" // Por defecto, todos los usuarios serán "user"
+    },
+    documents: {
+        type: [
+            {
+                name: {
+                    type: String,
+                    required: true // Asegura que el nombre del documento sea requerido
+                },
+                reference: {
+                    type: String,
+                    required: true // Asegura que la referencia del documento sea requerida
+                }
+            }
+        ],
+        default: [] // Establece un valor por defecto vacío
+    },
+    last_connection: {
+        type: Date
     }
 })
 
-userSchema.pre('save', function (){
+userSchema.pre('save', function () {
     this.password = createHash(this.password);
 });
 

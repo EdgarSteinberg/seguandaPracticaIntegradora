@@ -38,6 +38,11 @@ UserRouter.post('/login', addLogger, async (req, res, next) => {
         const token = await Users.login(email, password);
         //res.cookie('auth', token, { maxAge: 60 * 60 * 1000 }).redirect('/')
 
+
+          // Actualizar last_connection
+       // await Users.updateLastConnection(email);
+
+
         // En entorno de pruebas,
         res.cookie('auth', token, { maxAge: 60 * 60 * 1000 })
         if (process.env.NODE_ENV === 'test') {
@@ -92,7 +97,22 @@ UserRouter.post("/logout", (req, res) => {
     res.redirect("/login"); // Redirige al usuario a la página de inicio de sesión
 
 });
+// UserRouter.post('/logout', async (req, res) => {
+//     try {
+//         const token = req.cookies.auth;
+//         const decoded = jwt.verify(token, process.env.SECRET_KEY);
+//         const email = decoded.email;
 
+//         // Actualizar last_connection
+//         await Users.updateLastConnection(email);
+
+//         res.clearCookie('auth'); // Borra la cookie de autenticación
+//         res.redirect("/login"); // Redirige al usuario a la página de inicio de sesión
+//     } catch (error) {
+//         console.error('Error al cerrar sesión:', error);
+//         res.status(500).send({ status: 'error', message: 'Error interno del servidor' });
+//     }
+// });
 
 UserRouter.post('/recover-password', async (req, res) => {
     const { email } = req.body;

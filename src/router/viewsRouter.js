@@ -212,14 +212,5 @@ router.get("/check-email", async (req, res) => {
     )
 });
  
-// router.get('/reset-password', async (req,res) => {
-//     res.render(
-//         'reset-password',
-//         {
-//             title: 'Nueva Contraseña',
-//             // style: 'index.css',
-//             // token: 'token'
-//         }
-//     )
-// });
+
 export default router;
