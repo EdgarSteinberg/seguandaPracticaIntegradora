@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 import { UserServiceRespository } from '../repositories/index.js';
-import { isValidPassword,createHash  } from "../utils/cryptoUtil.js";
+import { isValidPassword, createHash } from "../utils/cryptoUtil.js";
 import CustomError from '../services/errors/CustomError.js';
 import { ErrorCodes } from '../services/errors/errorCodes.js';
 import { generateUserErrorInfo, generateUserIdErrorInfo, generateLoginErrorInfo } from '../services/errors/info.js';
@@ -76,6 +76,17 @@ class userController {
         }
     }
 
+    async updateLastConnection(email) {
+        try {
+            console.log(`Updating last connection for email: ${email}`);
+            const result = await UserServiceRespository.updateLastConnection(email);
+            console.log('Last connection update result:', result);
+        } catch (error) {
+            logger.error(`Error updating last connection: ${error.message}`);
+            throw new Error('Error updating last connection');
+        }
+    }
+
     async login(email, password) {
         if (!email || !password) {
             throw CustomError.createError({
@@ -100,6 +111,21 @@ class userController {
 
             if (isValidPassword(user, password)) {
                 delete user.password;
+
+
+
+                // Registro para verificar el email
+                console.log(`User ${email} is logging in.`);
+
+                // Actualizar última conexión
+                //const result = await UserServiceRespository.updateLastConnection(email);
+                const result = await this.updateLastConnection(email);
+                // Registro para verificar el resultado
+                console.log(`Last connection update result:`, result);
+
+
+
+
                 return jwt.sign(user, SECRET_KEY, { expiresIn: '1h' });
             }
 
@@ -150,9 +176,9 @@ class userController {
             });
         }
     }
-    
+
     // NODEMAILER 
-    
+
     async requestPasswordReset(email) {
         const transport = nodemailer.createTransport({
             service: 'gmail',
@@ -167,9 +193,9 @@ class userController {
         if (!user) {
             throw new Error('Correo electrónico no encontrado');
         }
-        
+
         const token = jwt.sign({ email }, SECRET_KEY, { expiresIn: '1h' });
-        console.log(`Este el token desde el email` ,token)
+        console.log(`Este el token desde el email`, token)
 
         // Enviar correo con el enlace de restablecimiento de contraseña
         await transport.sendMail({
@@ -198,15 +224,15 @@ class userController {
             const decoded = jwt.verify(token, SECRET_KEY);
             const { email } = decoded;
             const user = await UserServiceRespository.getEmail(email);
-    
+
             if (!user) {
                 throw new Error('Correo electrónico no encontrado');
             }
-    
+
             if (isValidPassword(user, newPassword)) {
                 throw new Error('La nueva contraseña no puede ser la misma que la anterior');
             }
-    
+
             const hashedPassword = await createHash(newPassword); // Aquí se utiliza correctamente
             await UserServiceRespository.updateUser(user._id, { password: hashedPassword });
         } catch (error) {
@@ -215,6 +241,16 @@ class userController {
             } else {
                 throw error;
             }
+        }
+    }
+
+    async uploadDocuments(uid, documents) {
+        try {
+            const result = await UserServiceRespository.uploadDocuments(uid, documents);
+            return result;
+        } catch (error) {
+            console.error('Error uploading documents:', error);
+            throw new Error('Error uploading documents');
         }
     }
 

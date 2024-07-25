@@ -7,14 +7,13 @@ import CurrentDTO from '../dao/dto/currentDTO.js';
 
 import addLogger from '../logger.js'
 import { authorization } from '../middlewares/authorization.js';
+import { uploader } from '../utils/multerUtil.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
-
-const UserRouter = Router();
-//Instaciamos el userController
+const SECRET_KEY = process.env.SECRET_KEY;
 const Users = new userController();
-
+const UserRouter = Router();
 
 UserRouter.post('/register', addLogger, async (req, res, next) => {
     try {
@@ -31,20 +30,13 @@ UserRouter.post('/register', addLogger, async (req, res, next) => {
     }
 });
 
-
 UserRouter.post('/login', addLogger, async (req, res, next) => {
     try {
         const { email, password } = req.body;
+        console.log(`Login attempt for email: ${email}`);
         const token = await Users.login(email, password);
-        //res.cookie('auth', token, { maxAge: 60 * 60 * 1000 }).redirect('/')
 
-
-          // Actualizar last_connection
-       // await Users.updateLastConnection(email);
-
-
-        // En entorno de pruebas,
-        res.cookie('auth', token, { maxAge: 60 * 60 * 1000 })
+        res.cookie('auth', token, { maxAge: 60 * 60 * 1000 });
         if (process.env.NODE_ENV === 'test') {
             return res.status(201).send({
                 status: 'success',
@@ -58,11 +50,9 @@ UserRouter.post('/login', addLogger, async (req, res, next) => {
     }
 });
 
+
 UserRouter.get('/current', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
-    const userDTO = new CurrentDTO(req.user)
-    // res.send({
-    //     user: userDTO
-    // })
+
     res.send({
         status: 'succes',
         payload: { user: userDTO }
@@ -71,6 +61,7 @@ UserRouter.get('/current', passport.authenticate('jwt', { session: false }), asy
 });
 
 UserRouter.get('/:uid', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+
     if (req.user.role === 'admin') return next()
     res.status(401).send({
         status: 'error',
@@ -92,27 +83,23 @@ UserRouter.get('/:uid', passport.authenticate('jwt', { session: false }), (req, 
     }
 });
 
-UserRouter.post("/logout", (req, res) => {
-    res.clearCookie('auth'); // Borra la cookie de autenticación
-    res.redirect("/login"); // Redirige al usuario a la página de inicio de sesión
+UserRouter.post('/logout', async (req, res) => {
+    try {
+        const token = req.cookies.auth;
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        const email = decoded.email;
 
+        // Actualizar last_connection
+        await Users.updateLastConnection(email);
+        console.log(`User ${email} logged out at ${new Date()}`); // Registro en consola
+
+        res.clearCookie('auth'); // Borra la cookie de autenticación
+        res.redirect("/login"); // Redirige al usuario a la página de inicio de sesión
+    } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+        res.status(500).send({ status: 'error', message: 'Error interno del servidor' });
+    }
 });
-// UserRouter.post('/logout', async (req, res) => {
-//     try {
-//         const token = req.cookies.auth;
-//         const decoded = jwt.verify(token, process.env.SECRET_KEY);
-//         const email = decoded.email;
-
-//         // Actualizar last_connection
-//         await Users.updateLastConnection(email);
-
-//         res.clearCookie('auth'); // Borra la cookie de autenticación
-//         res.redirect("/login"); // Redirige al usuario a la página de inicio de sesión
-//     } catch (error) {
-//         console.error('Error al cerrar sesión:', error);
-//         res.status(500).send({ status: 'error', message: 'Error interno del servidor' });
-//     }
-// });
 
 UserRouter.post('/recover-password', async (req, res) => {
     const { email } = req.body;
@@ -169,9 +156,19 @@ UserRouter.put('/premium/:uid', passport.authenticate('jwt', { session: false })
             return res.status(400).send({ error: 'El rol especificado no es válido' });
         }
 
+        // Obtener el usuario
+        const user = await Users.getUser(uid)
+        if (!user) {
+            return res.status(404).send({ error: 'Usuario no encontrado' });
+        }
+
+        // Verificar si el usuario quiere pasar a premium y si tiene los documentos requeridos
+        if (role === 'premium' && user.documents.length < 3) {
+            return res.status(400).send({ error: 'El usuario no ha terminado de procesar su documentación' });
+        }
+
         // Cambiar el rol del usuario
         const updatedUser = await Users.updateUser(uid, { role });
-
         if (!updatedUser) {
             return res.status(404).send({ error: 'Usuario no encontrado' });
         }
@@ -180,6 +177,40 @@ UserRouter.put('/premium/:uid', passport.authenticate('jwt', { session: false })
     } catch (error) {
         console.error('Error al actualizar el rol del usuario:', error);
         res.status(500).send({ error: 'Error interno del servidor' });
+    }
+});
+
+UserRouter.post('/:uid/documents', passport.authenticate('jwt', { session: false }), uploader.array('docs', 3), async (req, res) => {
+    const { uid } = req.params;
+    const documents = req.files.map(file => ({
+        name: file.fieldname,
+        reference: file.filename
+    }));
+
+    if (!documents || documents.length === 0) {
+        return res.status(400).send({ status: 'error', error: 'No documents uploaded' });
+    }
+
+    try {
+        // Obtener el usuario
+        const user = await Users.getUser(uid)
+        if (!user) {
+            return res.status(404).send({ error: 'Usuario no encontrado' });
+        }
+
+        // Combinar documentos existentes con nuevos documentos
+        const updatedDocuments = [...user.documents, ...documents];
+
+        // Actualizar los documentos del usuario
+        const result = await Users.uploadDocuments(uid, updatedDocuments);
+
+        //const result = await Users.uploadDocuments(uid, documents);
+        //res.send({ message: 'Documents uploaded successfully', result });
+
+        res.redirect('/login')
+    } catch (error) {
+        console.error('Error en la ruta:', error);
+        res.status(500).send({ status: 'error', error: 'Unhandled error', details: error.message });
     }
 });
 

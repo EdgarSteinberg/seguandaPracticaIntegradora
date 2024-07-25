@@ -8,20 +8,15 @@ import { uploader } from '../utils/multerUtil.js'
 import { authenticate } from '../middlewares/auth.js'
 import addLogger from '../logger.js';
 
-
 const Productrouter = Router();
 
 const Manager = new ProductController();
-
 
 Productrouter.get("/", addLogger, async (req, res, next) => {
     try {
         const products = await Manager.getAllProducts();
         const user = req.user
-        // res.send({
-        //     status: 'success',
-        //     payload: products, user
-        // });
+
         res.send({
             status: 'success',
             payload: { products: products, user: user }
@@ -33,7 +28,6 @@ Productrouter.get("/", addLogger, async (req, res, next) => {
 });
 
 Productrouter.get('/:pid', addLogger, async (req, res, next) => {
-
     try {
         const result = await Manager.getProductByID(req.params.pid);
 
@@ -51,12 +45,13 @@ Productrouter.post('/', addLogger, passport.authenticate('jwt', { session: false
     try {
 
         if (req.files) {
+            console.log('Archivos recibidos:', req.files); // Log para verificar archivos recibidos
             req.body.thumbnail = [];
             req.files.forEach((file) => {
                 req.body.thumbnail.push(file.filename);
             });
+            console.log('Thumbnail array:', req.body.thumbnail); // Verificar el array de thumbnail
         }
-
         const userEmail = req.user.email;
         const userRole = req.user.role;
 

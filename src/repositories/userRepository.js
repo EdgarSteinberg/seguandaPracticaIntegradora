@@ -30,4 +30,13 @@ export default class UserRepository {
     async getEmail(email){
         return await this.dao.getEmail(email)
     }
+
+
+    async updateLastConnection(email) {
+        return await this.dao.updateLastConnection(email);
+    }
+
+    async uploadDocuments(uid, documents) {
+        return await this.dao.uploadDocuments(uid, documents);
+    }
 }

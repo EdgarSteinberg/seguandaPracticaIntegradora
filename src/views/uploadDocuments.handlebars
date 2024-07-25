@@ -1,0 +1,34 @@
+{{!-- <h1>Upload Documents</h1>
+<form class="box" action="/api/users/{{user._id}}/documents" method="post" enctype="multipart/form-data">
+    <label for="profile">Upload Profile Picture:</label>
+    <input type="file" name="docs" id="docs" multiple>
+    <br>
+
+    <label for="profile">Upload Profile Picture:</label>
+    <input type="file" name="docs" id="docs" multiple>
+    <br>
+
+
+    <label for="profile">Upload Profile Picture:</label>
+    <input type="file" name="docs" id="docs" multiple>
+    <br>
+
+    <button class="btnChat" type="submit">Subir</button>
+</form> --}}
+
+
+
+
+<h1>Upload Documents</h1>
+
+<form class="box" id="uploadForm" action="/api/users/{{user._id}}/documents" method="post"
+    enctype="multipart/form-data">
+    <label for="docs">Upload Documents:</label>
+    <input type="file" name="docs" id="docs" multiple />
+    <br>
+    <span id="error-message" class="error-message">You must upload at least 3 files.</span>
+    <br>
+    <button class="btnChat" type="submit">Subir</button>
+</form>
+
+<script src="/js/fileUploadHandler.js"></script>

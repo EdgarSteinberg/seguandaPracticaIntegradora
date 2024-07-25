@@ -18,7 +18,9 @@
     <label for="category">Categoria:</label><br>
     <input name="category" id="category" type="text"><br>
 
-    
+    {{!-- <label for="thumbnail">Upload Thumbnail:</label><br>
+    <input type="file" name="thumbnail" id="thumbnail" multiple> --}}
+
     {{#if premium}}
     <input type="hidden" name="owner" id="owner" value="{{user.email}}">
     {{/if}}

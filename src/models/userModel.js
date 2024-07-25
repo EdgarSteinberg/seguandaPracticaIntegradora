@@ -58,15 +58,15 @@ const userSchema = mongoose.Schema({
             {
                 name: {
                     type: String,
-                    required: true // Asegura que el nombre del documento sea requerido
+                    required: true 
                 },
                 reference: {
                     type: String,
-                    required: true // Asegura que la referencia del documento sea requerida
+                    required: true
                 }
             }
         ],
-        default: [] // Establece un valor por defecto vacío
+        default: []  
     },
     last_connection: {
         type: Date

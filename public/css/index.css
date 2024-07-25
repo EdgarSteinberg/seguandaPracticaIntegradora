@@ -216,3 +216,9 @@ hr {
 .imgFaker{
     width: 250px;
 }
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    display: none;
+}

@@ -132,7 +132,6 @@ router.get("/carts/:cid", authenticate, async (req, res) => {
     }
 });
 
-
 //Ruta Login Register Logout
 router.get("/login", publicRoute, (req, res) => {
     res.render(
@@ -208,6 +207,17 @@ router.get("/check-email", async (req, res) => {
         {
             title: 'Correo Enviado',
             style: 'index.css'
+        }
+    )
+});
+
+router.get("/uploadDocuments", authenticate, async (req, res) => {
+    res.render(
+        'uploadDocuments',
+        {
+            title: 'SendDocuments',
+            style: 'index.css',
+            user: req.user
         }
     )
 });

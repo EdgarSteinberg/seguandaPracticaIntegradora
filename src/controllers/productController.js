@@ -105,7 +105,7 @@ class ProductController {
         }
 
         try {
-            console.log("info del controlador", owner)
+            //console.log("info del controlador", owner)
             let productOwner = owner;
 
 

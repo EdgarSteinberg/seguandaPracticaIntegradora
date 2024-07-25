@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const code = document.getElementById('code').value;
             const stock = document.getElementById('stock').value;
             const category = document.getElementById('category').value;
+            //const thumbnail = document.getElementById('thumbnail').value;
 
             const nuevoProducto = {
                 title: title,
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 stock: stock,
                 category: category,
                 //owner: owner
+               // thumbnail:thumbnail
             };
 
 
