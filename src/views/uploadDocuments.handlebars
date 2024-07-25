@@ -1,24 +1,3 @@
-{{!-- <h1>Upload Documents</h1>
-<form class="box" action="/api/users/{{user._id}}/documents" method="post" enctype="multipart/form-data">
-    <label for="profile">Upload Profile Picture:</label>
-    <input type="file" name="docs" id="docs" multiple>
-    <br>
-
-    <label for="profile">Upload Profile Picture:</label>
-    <input type="file" name="docs" id="docs" multiple>
-    <br>
-
-
-    <label for="profile">Upload Profile Picture:</label>
-    <input type="file" name="docs" id="docs" multiple>
-    <br>
-
-    <button class="btnChat" type="submit">Subir</button>
-</form> --}}
-
-
-
-
 <h1>Upload Documents</h1>
 
 <form class="box" id="uploadForm" action="/api/users/{{user._id}}/documents" method="post"
@@ -28,6 +7,15 @@
     <br>
     <span id="error-message" class="error-message">You must upload at least 3 files.</span>
     <br>
+       <p id="info-message" class="info-message">
+        To upgrade to premium, you need to upload the following documents:
+        <ul>
+            <li>Identification</li>
+            <li>Proof of Address</li>
+            <li>Proof of Bank Statement</li>
+        </ul>
+        After uploading, please log in again to complete the process.
+    </p>
     <button class="btnChat" type="submit">Subir</button>
 </form>
 

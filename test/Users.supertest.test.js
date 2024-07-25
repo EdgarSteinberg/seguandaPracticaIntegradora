@@ -12,15 +12,15 @@ describe('Testing Adopme', function() {
         after(function () {});
         afterEach(function () {});
 
-        it('POST /api/sessions/register debe registrar un nuevo usuario', async function () {
-            const { statusCode, ok, _body } = await requester.post('/api/sessions/register').send(testUser);
+        it('POST /api/users/register debe registrar un nuevo usuario', async function () {
+            const { statusCode, ok, _body } = await requester.post('/api/users/register').send(testUser);
             //console.log(_body)
             expect(_body.payload).to.be.ok;
             expect(_body.payload).to.have.property('_id')
         });   
         
-        it('POST /api/sessions/login debe loguear correctamente al usuario', async function () {
-            const result = await requester.post('/api/sessions/login').send(testUser);
+        it('POST /api/users/login debe loguear correctamente al usuario', async function () {
+            const result = await requester.post('/api/users/login').send(testUser);
             const cookieData = result.header['set-cookie'][0];
             cookie = {name: cookieData.split('=')[0], value: cookieData.split('=')[1]};
        
@@ -29,8 +29,8 @@ describe('Testing Adopme', function() {
             expect(cookie.value).to.be.ok;
         });
         
-        it('POST /api/sessions/current debe devolver datos correctos de usuario',async function () {
-            const {_body} = await requester.get('/api/sessions/current').set('Cookie', [`${cookie.name}=${cookie.value}`]);
+        it('POST /api/users/current debe devolver datos correctos de usuario',async function () {
+            const {_body} = await requester.get('/api/users/current').set('Cookie', [`${cookie.name}=${cookie.value}`]);
             //console.log(_body)
             expect(_body.payload.user).to.have.property('_id');
             expect(_body.payload.user).to.have.property('first_name');

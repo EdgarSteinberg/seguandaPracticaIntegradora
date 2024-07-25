@@ -52,7 +52,7 @@ UserRouter.post('/login', addLogger, async (req, res, next) => {
 
 
 UserRouter.get('/current', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
-
+    const userDTO = new CurrentDTO(req.user)
     res.send({
         status: 'succes',
         payload: { user: userDTO }
