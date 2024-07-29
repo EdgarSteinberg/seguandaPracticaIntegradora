@@ -34,8 +34,9 @@ mongoose.connect(process.env.MONGODB_URI);
 //Middlewares express
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+//app.use(express.static('public'));
 
+app.use(express.static(`${__dirname}/../../public`));
 //Motores de plantillas Handlebars 
 app.engine("handlebars", handlebars.engine());
 app.set("view engine", "handlebars");
